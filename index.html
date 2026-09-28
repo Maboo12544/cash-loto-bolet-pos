@@ -28,11 +28,12 @@ footer{flex:0 0 auto;text-align:center;background:#fff;margin-top:7px;padding:10
 @media print{.top,.stats,.tabs,.tools,.draw,.inputs,.keys,footer,.timebar,.clockwarn,.offbar,.panel button{display:none!important}.panel{position:static;transform:none;box-shadow:none;max-height:none}}
   @media(max-height:760px){.top{height:64px}.stats{height:56px}.tabs{padding:6px 10px}.tabs button{padding:9px}.tools{padding-bottom:6px}.tools button{min-height:36px}.draw{min-height:56px;margin-bottom:6px}.inputs input{height:44px}.keys{gap:4px}.keys button{font-size:23px}footer{padding-top:6px;padding-bottom:max(6px,env(safe-area-inset-bottom))}}
 button{-webkit-tap-highlight-color:transparent;user-select:none}input{font-size:16px!important}
+.gamepick{font-size:14px!important;background:#e8edf5!important;color:#142136!important}.gamepick.selected{background:#1769e8!important;color:#fff!important;outline:3px solid #f4c542;outline-offset:-3px}.keys .print,.keys .cal,.keys .muted{font-size:14px}
 </style>
 </head>
 <body>
 <div class="posapp">
-<header class="top"><button class="icon" id="menuBtn">☰</button><div class="brand">CASH <b>LOTO</b><small>PI PLIS POU OU</small></div><div class="balance"><small>BALANCE</small><strong id="balance">$0.00</strong></div><button class="icon" id="reportBtn">▥</button><button class="icon" id="moreBtn">⋮</button></header>
+
 <section class="stats"><div>SALES<b id="sales">$0.00</b></div><div>COMMISSION<b id="comm">$0.00</b></div><div>PRIZE<b id="prize">$0.00</b></div><div>FINAL<b id="final">$0.00</b></div></section>
 <section class="tabs"><button class="active" id="ticketTab">TICKET (<span id="tc">0</span>)</button><button id="playsTab">PLAYS ($ <span id="plays">0.00</span>)</button></section>
 <section class="tools"><button id="posBtn">🎟️ <b>pos1</b></button><button id="printBtn">🖨️</button><button id="moneyBtn">$</button><button id="copyBtn">▣</button><button id="clockBtn">◷ <span id="clock"></span></button></section>
