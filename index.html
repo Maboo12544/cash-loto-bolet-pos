@@ -58,7 +58,8 @@ const fmt=n=>'$'+Number(n||0).toFixed(2);
 let field='number';
 num.onclick=()=>field='number'; amt.onclick=()=>field='amount';
 const DRAWS={'FLORIDA AM':[13,15],'FLORIDA PM':[21,30],'NEW YORK AM':[14,15],'NEW YORK PM':[22,15],'GEORGIA AM':[12,15],'GEORGIA PM':[18,45],'CONNECTICUT AM':[13,20],'CONNECTICUT PM':[22,15]};
-function needLen(){return st.mode==='M'||st.mode==='4'?4:st.mode==='3'?3:2}
+function isPair(){return st.mode==='M'||st.mode==='P'}
+function needLen(){return isPair()||st.mode==='4'?4:st.mode==='3'?3:2}
 function setMode(m){st.mode=m;num.value='';field='number';save();sync()}
 function sync(){
   const f=el('final'); if(f) f.textContent=fmt(st.balance);
@@ -80,12 +81,12 @@ function addPlay(){
   let n=num.value.replace(/\D/g,''), a=Number(amt.value);
   if(!n) return alert('Antre boul la.');
   const need=needLen();
-  if(n.length!==need) return alert(st.mode==='B'?'Bolet = 2 chif':st.mode==='M'?'Mariage = 2 boul (4 chif)':st.mode==='P'?'Palé = 2 chif':st.mode==='3'?'Loto 3 = 3 chif':'Loto 4 = 4 chif');
+  if(n.length!==need) return alert(isPair()?'Mariage / Palé = 2 boul (4 chif)':st.mode==='B'?'Bolet = 2 chif':st.mode==='3'?'Loto 3 = 3 chif':'Loto 4 = 4 chif');
   if(!a||a<=0){ a=Number(st.lastAmount||0); if(!a){ field='amount'; return alert('Antre montan an.'); } amt.value=a.toFixed(2); }
   if(a>Number(el('limit').value||200)) return alert('Depase limit.');
   if(a>st.balance) return alert('Balance pa sifi.');
-  const showN=st.mode==='M'?n.slice(0,2)+'-'+n.slice(2):n;
-  const t={id:Date.now(),number:showN,amount:a,draw:st.draw,mode:st.mode,at:new Date().toISOString()};
+  const showN=isPair()?n.slice(0,2)+'-'+n.slice(2):n;
+  const t={id:Date.now(),number:showN,amount:a,draw:st.draw,mode:isPair()?'M':st.mode,at:new Date().toISOString()};
   st.lastAmount=a; st.balance-=a; st.sales+=a; st.cart.push(t); save(); sync();
   num.value=''; field='number';
 }
@@ -119,7 +120,7 @@ on('playsTab',()=>show('Plays',rows(st.cart)+receiptHtml(st.cart)));
 on('todayBtn',()=>show("Today's tickets",rows(st.tickets.filter(t=>new Date(t.at).toDateString()===new Date().toDateString()))));
 on('printBtn',()=>{if(!st.cart.length&&!st.tickets.length)return alert('Pa gen fich.');finishTicket();});
 on('moneyBtn',()=>show('Balance','<div class="row"><span>Balance</span><b>'+fmt(st.balance)+'</b></div>'));
-on('copyBtn',async()=>{const t=st.tickets[0]||st.cart[0];if(!t)return alert('Pa gen tikè.');try{await navigator.clipboard.writeText(t.number+' '+fmt(t.amount));alert('Kopye')}catch(err){alert(err.message)}});
+on('copyBtn',async()=>{const t=st.tickets[0]||st.cart[0];if(!t)return alert('Pa gen tikè.');try{await navigator.clipboard.writeText(t.number+' '+fmt(t.amount));alert('Kopye')}catch(err){alert(err.message)}};
 on('posBtn',()=>show('POS','<div class="row"><span>PDV</span><b>pos1</b></div>'));
 on('clockBtn',()=>alert(new Date().toLocaleString()));
 function tick(){
