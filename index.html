@@ -59,7 +59,7 @@ const save=()=>localStorage.setItem(S,JSON.stringify(st));
 const el=id=>document.getElementById(id);
 const num=el('number'), amt=el('amount'), panel=el('panel');
 const fmt=n=>'$'+Number(n||0).toFixed(2);
-let field='number';
+let field='number',marriageFirst='';
 num.onclick=()=>field='number'; amt.onclick=()=>field='amount';
 const DRAWS={'FLORIDA AM':[13,15],'FLORIDA PM':[21,30],'NEW YORK AM':[14,15],'NEW YORK PM':[22,15],'GEORGIA AM':[12,15],'GEORGIA PM':[18,45],'CONNECTICUT AM':[13,20],'CONNECTICUT PM':[22,15]};
 function maxLen(){return (st.mode==='B'||st.mode==='F')?2:4}
@@ -156,15 +156,17 @@ document.querySelector('.keys').onclick=e=>{
   else if(k==='/') amt.value=((+amt.value||0)/2).toFixed(2);
 };
 el('enter').onclick=()=>{
-  const n=num.value.trim(),a=Number(amt.value);
-  if(!n) return alert('Antre nimewo a.');
-  if(st.mode==='B'&&n.length!==2) return alert('Bolet = 2 chif.');
-  if(!a||a<=0) return alert('Antre montan an.');
-  if(a>200) return alert('Limit $200.');
-  if(a>st.balance) return alert('Balance pa sifi.');
+  let n=num.value.trim(),a=Number(amt.value);
+  if(st.mode==='M'&&!marriageFirst){if(n.length!==2)return alert('Mariage: antre premye boul 2 chif.');marriageFirst=n;num.value='';return;}
+  if(st.mode==='M'){if(n.length!==2)return alert('Mariage: antre dezyèm boul 2 chif.');n=marriageFirst+'-'+n;marriageFirst='';}
+  else if(st.mode==='B'&&n.length!==2)return alert('Bolet = 2 chif.');
+  else if(st.mode==='D'&&n.length!==2)return alert('Direto = 2 chif.');
+  else if(st.mode==='Q'&&(n.length<3||n.length>4))return alert('Loto = 3 oswa 4 chif.');
+  if(!a||a<=0){a=Number(st.lastAmount||0);if(!a)return alert('Antre montan an.');amt.value=a.toFixed(2);}
+  if(a>200)return alert('Limit $200.');if(a>st.balance)return alert('Balance pa sifi.');
   const t={id:Date.now(),number:n,amount:a,draw:st.draw,mode:st.mode,at:new Date().toISOString()};
-  st.balance-=a;st.sales+=a;st.tickets.unshift(t);st.cart.push(t);save();sync();
-  num.value='';amt.value='0.00';field='number'; afterTicket([t]);
+  st.lastAmount=a;st.balance-=a;st.sales+=a;st.tickets.unshift(t);st.cart.push(t);save();sync();
+  num.value='';amt.value=a.toFixed(2);field='number';afterTicket([t]);
 };
 el('drawBtn').onclick=()=>show('Chwazi tiraj',Object.keys(DRAWS).map(d=>'<div class="row"><span>'+d+'</span><button data-draw="'+d+'">Chwazi</button></div>').join(''));
 panel.onclick=e=>{const d=e.target.dataset.draw;if(d){st.draw=d;save();sync();panel.classList.add('hidden')}};
