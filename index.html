@@ -30,6 +30,7 @@ footer{flex:0 0 auto;text-align:center;background:#fff;margin-top:7px;padding:10
 button{-webkit-tap-highlight-color:transparent;user-select:none}input{font-size:16px!important}
 .gamepick{font-size:14px!important;background:#e8edf5!important;color:#142136!important}.gamepick.selected{background:#1769e8!important;color:#fff!important;outline:3px solid #f4c542;outline-offset:-3px}.keys .print,.keys .cal,.keys .muted{font-size:14px}
 .gamebar{display:flex;gap:5px;padding:0 10px 8px;overflow-x:auto;scrollbar-width:none}.gamebar::-webkit-scrollbar{display:none}.gamebar button{flex:1 0 auto;border:1px solid #d7dce5;background:#fff;color:#15233d;border-radius:9px;padding:8px 10px;font-size:12px;font-weight:800}.gamebar button.active{background:#1769e8;color:#fff;border-color:#1769e8}
+.finalkeys{grid-template-columns:repeat(4,1fr)!important}.finalkeys .zero{grid-column:span 3!important}.finalkeys .side{background:#1769e8!important;color:#fff!important;font-size:18px!important}.finalkeys .create{grid-column:1/-1!important;background:#1769e8!important;color:#fff!important;font-size:20px!important}.finalkeys button{min-height:58px}
 </style>
 </head>
 <body>
@@ -44,12 +45,12 @@ button{-webkit-tap-highlight-color:transparent;user-select:none}input{font-size:
 <button class="draw" id="drawBtn"><span>🟢</span><b id="drawName">FLORIDA PM</b><small>Closing : <em id="countdown">--:--:--</em></small><i>⌄</i></button>
 <section class="gamebar"><button class="active" data-mode="B">Bolet</button><button data-mode="M">Mariage</button><button data-mode="P">Palé</button><button data-mode="3">Loto 3</button><button data-mode="4">Loto 4</button></section>
 <section class="inputs"><input id="number" inputmode="none" readonly maxlength="5"><input id="amount" inputmode="none" readonly value="0.00"><input id="limit" value="200" readonly></section>
-<section class="keys">
-<button class="green" data-key="back">⌫</button>
-<button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button><button class="green" data-key="/">/</button>
-<button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button><button class="green" data-key="-">-</button>
-<button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button><button class="green" data-key="+">+</button>
-<button class="zero" data-key="0">0</button><button class="enter" id="enter">ENTER</button>
+<section class="keys finalkeys">
+<button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button><button class="side" id="enter">ENTER</button>
+<button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button><button class="side" data-key="back">EFASE</button>
+<button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button><button class="side" data-mode="BP">BP</button>
+<button class="zero" data-key="0">0</button><button class="side" data-mode="P">P</button>
+<button class="create" id="createTicket">KREYE TIKÈ</button>
 </section>
 <footer id="todayBtn">▣ Today's tickets</footer>
 <div id="panel" class="panel hidden"></div>
@@ -198,6 +199,8 @@ function tick(){
 setInterval(tick,1000);tick();sync();
 window.addEventListener('online',sync);window.addEventListener('offline',sync);
 if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+
+el('createTicket').onclick=()=>{if(!st.cart.length)return alert('Pa gen play pou kreye tikè.');show('Tikè pare',rows(st.cart));st.cart=[];save();sync();};
 </script>
 </body>
 </html>
