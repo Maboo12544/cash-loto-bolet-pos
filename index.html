@@ -7,8 +7,8 @@
   <link rel="manifest" href="./manifest.webmanifest" />
   <title>Cash Loto Bolet POS</title>
   <style>
-*{box-sizing:border-box}html,body{margin:0;background:#eef1f5;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#101827}
-.posapp{width:100%;max-width:520px;min-height:100dvh;margin:auto;background:#f6f7f9}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;background:#eef1f5;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#101827}
+.posapp{width:100%;max-width:520px;height:100dvh;min-height:100dvh;margin:auto;background:#f6f7f9;overflow:hidden;display:flex;flex-direction:column;touch-action:manipulation}
 .top{height:78px;background:linear-gradient(180deg,#1839e8 0%,#0879ef 55%,#08c9d7 100%);display:flex;align-items:center;gap:10px;padding:env(safe-area-inset-top) 12px 0}
 .icon{border:0;background:transparent;font-size:28px;font-weight:900}.brand{flex:1;text-align:center;font-weight:900;font-size:22px}.brand b{color:#ffd21a}.brand small{display:block;font-size:8px;letter-spacing:2px}
 .balance{text-align:center}.balance small{display:block;font-size:10px;font-weight:800}.balance strong{font-size:20px}
@@ -20,13 +20,15 @@
 .clockwarn,.offbar{margin:0 10px 8px;font-size:11px;padding:7px 10px;border-radius:10px;font-weight:700;text-align:center}
 .clockwarn{background:#fef3c7;color:#92400e}.offbar{background:#f59e0b;color:#111;display:none}.offbar.on{display:block}
 .inputs{display:grid;grid-template-columns:1.1fr .8fr .8fr;gap:7px;padding:0 10px 8px}.inputs input{width:100%;height:52px;border:2px solid #d2d6dc;border-radius:12px;text-align:center;font-size:22px;font-weight:800}.inputs input:first-child{border-color:#1769e8}
-.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:0 7px}.keys button{height:61px;border:0;border-radius:7px;background:#15233d;color:#fff;font-size:27px;font-weight:800}.keys .green,.keys .enter{background:#1769e8}.keys .muted{background:#aeb4bd}.keys .print{background:#164ec9}.keys .cal{background:#c4a35a}.keys .zero{grid-column:span 2}.keys .enter{grid-column:span 2;font-size:24px}.keys button.selected{outline:3px solid #f4c542;outline-offset:-3px}
-footer{text-align:center;background:#fff;margin-top:7px;padding:10px 8px max(10px,env(safe-area-inset-bottom));font-size:13px;font-weight:700;color:#697386}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:0 7px;flex:1;min-height:0}.keys button{height:auto;min-height:0;border:0;border-radius:7px;background:#15233d;color:#fff;font-size:27px;font-weight:800}.keys .green,.keys .enter{background:#1769e8}.keys .muted{background:#aeb4bd}.keys .print{background:#164ec9}.keys .cal{background:#c4a35a}.keys .zero{grid-column:span 2}.keys .enter{grid-column:span 2;font-size:24px}.keys button.selected{outline:3px solid #f4c542;outline-offset:-3px}
+footer{flex:0 0 auto;text-align:center;background:#fff;margin-top:7px;padding:10px 8px max(10px,env(safe-area-inset-bottom));font-size:13px;font-weight:700;color:#697386}
 .panel{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(520px,100%);max-height:70vh;overflow:auto;background:#fff;border-radius:18px 18px 0 0;box-shadow:0 -10px 35px #0004;padding:16px;z-index:50}.panel.hidden{display:none}.panel h3{margin:0 0 10px}.panel .row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee}.panel button{padding:9px 12px;border:0;border-radius:9px;background:#1769e8;color:#fff;font-weight:700;margin:4px 4px 0 0}
 .wa{background:#25D366!important}.printb{background:#111!important}
 .receipt{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;border:1px dashed #9ca3af;padding:12px;border-radius:8px;margin:8px 0}
 @media print{.top,.stats,.tabs,.tools,.draw,.inputs,.keys,footer,.timebar,.clockwarn,.offbar,.panel button{display:none!important}.panel{position:static;transform:none;box-shadow:none;max-height:none}}
-  </style>
+  @media(max-height:760px){.top{height:64px}.stats{height:56px}.tabs{padding:6px 10px}.tabs button{padding:9px}.tools{padding-bottom:6px}.tools button{min-height:36px}.draw{min-height:56px;margin-bottom:6px}.inputs input{height:44px}.keys{gap:4px}.keys button{font-size:23px}footer{padding-top:6px;padding-bottom:max(6px,env(safe-area-inset-bottom))}}
+button{-webkit-tap-highlight-color:transparent;user-select:none}input{font-size:16px!important}
+</style>
 </head>
 <body>
 <div class="posapp">
