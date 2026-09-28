@@ -72,7 +72,6 @@ button{-webkit-tap-highlight-color:transparent;user-select:none}
 <label class="field"><span>LIMIT</span><input id="limit" value="200" readonly></label>
 <label class="field"><span>PWEN</span><input id="amount" inputmode="none" readonly value="0.00"></label>
 </section>
-<div class="mini" id="mini"></div>
 <section class="keys" id="keys">
 <button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button><button class="side" id="enter">ENTER</button>
 <button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button><button class="side" data-key="back">EFASE</button>
@@ -115,7 +114,7 @@ function sync(){
   el('drawName').textContent=st.draw;
   document.querySelectorAll('#gamebar [data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===st.mode));
   el('offbar').classList.toggle('on',!navigator.onLine);
-  el('mini').textContent=st.cart.length?st.cart.map(t=>t.number+' '+fmt(t.amount)).join('   '):'';
+  
 }
 function rows(a){return a.length?a.map(t=>'<div class="row"><span><b>'+t.number+'</b> · '+t.draw+'</span><b>'+fmt(t.amount)+'</b></div>').join(''):'<p>Pa gen tikè.</p>'}
 function show(t,h){panel.innerHTML='<h3>'+t+'</h3>'+h+'<p><button id="closePanel">Fèmen</button></p>';panel.classList.remove('hidden');on('closePanel',()=>panel.classList.add('hidden'))}
