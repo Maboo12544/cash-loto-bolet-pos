@@ -56,7 +56,7 @@ button{-webkit-tap-highlight-color:transparent;user-select:none}input{font-size:
 <div id="panel" class="panel hidden"></div>
 </div>
 <script>
-const S='cashloto-active-pos-v3';
+const S='cashloto-active-pos-v4';
 let st=JSON.parse(localStorage.getItem(S)||'null')||{balance:707.58,sales:0,tickets:[],cart:[],mode:'B',draw:'FLORIDA PM'};
 const save=()=>localStorage.setItem(S,JSON.stringify(st));
 const el=id=>document.getElementById(id);
@@ -65,7 +65,7 @@ const fmt=n=>'$'+Number(n||0).toFixed(2);
 let field='number',marriageFirst='';
 num.onclick=()=>field='number'; amt.onclick=()=>field='amount';
 const DRAWS={'FLORIDA AM':[13,15],'FLORIDA PM':[21,30],'NEW YORK AM':[14,15],'NEW YORK PM':[22,15],'GEORGIA AM':[12,15],'GEORGIA PM':[18,45],'CONNECTICUT AM':[13,20],'CONNECTICUT PM':[22,15]};
-function maxLen(){return (st.mode==='B'||st.mode==='F')?2:4}
+function maxLen(){if(st.mode==='3')return 3;if(st.mode==='4')return 4;return 4}
 
 const UUIDS=['000018f0-0000-1000-8000-00805f9b34fb','49535343-fe7d-4ae5-8fa9-9fafd205e455','6e400001-b5a3-f393-e0a9-e50e24dcca9e','e7810a71-73ae-499d-8c15-faa9aef0c3f2'];
 let bt={dev:null,ch:null,name:localStorage.getItem('escpos-name')||''};
@@ -150,7 +150,7 @@ function printerPanel(){
 document.querySelector('.keys').onclick=e=>{
   const b=e.target.closest('button'); if(!b) return;
   const k=b.dataset.key,m=b.dataset.mode;
-  if(m){st.mode=m;num.value='';save();sync();return}
+  if(m){st.mode=m;marriageFirst='';num.value='';field='number';save();sync();return}
   if(k==='back'){ if(field==='amount') amt.value=amt.value.length>1?amt.value.slice(0,-1):'0'; else num.value=num.value.slice(0,-1); }
   else if(/^\d$/.test(k)){ if(field==='amount') amt.value=(amt.value==='0.00'||amt.value==='0')?k:amt.value+k; else num.value=(num.value+k).slice(0,maxLen()); }
   else if(k==='.'){ field='amount'; if(!String(amt.value).includes('.')) amt.value+='.'; }
@@ -170,18 +170,18 @@ el('enter').onclick=()=>{
   if(a>200)return alert('Limit $200.');if(a>st.balance)return alert('Balance pa sifi.');
   const t={id:Date.now(),number:n,amount:a,draw:st.draw,mode:st.mode,at:new Date().toISOString()};
   st.lastAmount=a;st.balance-=a;st.sales+=a;st.tickets.unshift(t);st.cart.push(t);save();sync();
-  num.value='';amt.value=a.toFixed(2);field='number';afterTicket([t]);
+  num.value='';amt.value=a.toFixed(2);field='number';
 };
 el('drawBtn').onclick=()=>show('Chwazi tiraj',Object.keys(DRAWS).map(d=>'<div class="row"><span>'+d+'</span><button data-draw="'+d+'">Chwazi</button></div>').join(''));
-panel.onclick=e=>{const d=e.target.dataset.draw;if(d){st.draw=d;save();sync();panel.classList.add('hidden')}};
+panel.onclick=e=>{const d=e.target.dataset.draw;if(d){st.draw=d;save();sync();panel.classList.add('hidden');return}if(e.target.id==='printerOpen')printerPanel()};
 el('ticketTab').onclick=()=>show('Tikè',rows(st.tickets));
 el('playsTab').onclick=()=>show('Plays',rows(st.cart)+receiptHtml(st.cart));
 el('todayBtn').onclick=()=>show("Today's tickets",rows(st.tickets.filter(t=>new Date(t.at).toDateString()===new Date().toDateString())));
-el('printBtn').onclick=el('quickPrint').onclick=()=>{if(!st.cart.length)return alert('Pa gen fich.');afterTicket(st.cart)};
+el('printBtn').onclick=()=>{if(!st.cart.length)return alert('Pa gen fich.');afterTicket(st.cart)};
 el('moneyBtn').onclick=()=>show('Balance','<div class="row"><span>Balance</span><b>'+fmt(st.balance)+'</b></div>');
 el('copyBtn').onclick=async()=>{const t=st.tickets[0];if(!t)return alert('Pa gen tikè.');try{await navigator.clipboard.writeText('Cash Loto '+t.number+' '+fmt(t.amount));alert('Kopye')}catch(e){alert(e.message)}};
 el('posBtn').onclick=()=>show('POS','<div class="row"><span>PDV</span><b>pos1</b></div>');
-el('menuBtn').onclick=()=>printerPanel();
+el('menuBtn').onclick=()=>show('Menu','<div class="row"><span>POS</span><b>pos1</b></div><div class="row"><span>Tikè jodi a</span><b>'+st.tickets.length+'</b></div><button id="printerOpen">Enprimant</button>');
 el('reportBtn').onclick=()=>show('Rapò','<div class="row"><span>Sales</span><b>'+fmt(st.sales)+'</b></div>');
 el('moreBtn').onclick=()=>printerPanel();
 el('clockBtn').onclick=()=>alert(new Date().toLocaleString());
@@ -200,7 +200,7 @@ setInterval(tick,1000);tick();sync();
 window.addEventListener('online',sync);window.addEventListener('offline',sync);
 if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
 
-el('createTicket').onclick=()=>{if(!st.cart.length)return alert('Pa gen play pou kreye tikè.');show('Tikè pare',rows(st.cart));st.cart=[];save();sync();};
+el('createTicket').onclick=()=>{if(!st.cart.length)return alert('Pa gen play pou kreye tikè.');const list=[...st.cart];const total=list.reduce((a,t)=>a+t.amount,0);show('Tikè pare',receiptHtml(list)+'<button class="printb" id="finalPrint">Enprime</button><button class="wa" id="finalWa">WhatsApp</button>');el('finalPrint').onclick=()=>printEscpos(list);el('finalWa').onclick=()=>{location.href='https://wa.me/?text='+encodeURIComponent('Cash Loto '+st.draw+'\n'+list.map(t=>t.number+' = '+fmt(t.amount)).join('\n')+'\nTotal '+fmt(total))};st.cart=[];save();sync();};
 </script>
 </body>
 </html>
