@@ -5,251 +5,120 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cash Loto Bolet POS</title>
   <style>
-    :root {
-      --navy: #071a4a;
-      --navy2: #0b2a7a;
-      --blue: #1a56e8;
-      --red: #e11d2e;
-      --green: #16a34a;
-      --bg: #f4f6fb;
-      --card: #fff;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #0a1638; color: #111; min-height: 100vh;
-      display: flex; flex-direction: column; align-items: center; padding: 16px;
-    }
-    .banner { color: #fbbf24; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 10px; }
-    .phones { display: flex; flex-wrap: wrap; gap: 18px; justify-content: center; max-width: 1400px; }
-    .phone {
-      width: 320px; background: var(--card); border-radius: 28px; overflow: hidden;
-      box-shadow: 0 20px 50px rgba(0,0,0,.35); border: 8px solid #111;
-      min-height: 640px; display: flex; flex-direction: column;
-    }
-    .status { background: var(--navy); color: #fff; font-size: 11px; padding: 6px 12px; display: flex; justify-content: space-between; }
-    .head { background: linear-gradient(180deg, var(--navy), var(--navy2)); color: #fff; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-weight: 800; font-size: 14px; }
-    .logo span { color: var(--red); }
-    .bal { background: #0f3d1f; border: 1px solid #22c55e; color: #86efac; font-size: 10px; padding: 4px 8px; border-radius: 8px; }
-    .states { display: flex; flex-wrap: nowrap; gap: 6px; padding: 8px; background: #eef2ff; overflow-x: auto; }
-    .st { background: #fff; border: 1px solid #dbe3ff; border-radius: 10px; padding: 10px 8px; text-align: center; font-size: 11px; font-weight: 800; color: #0b2a7a; white-space: nowrap; flex: 0 0 auto; }
-    .st.on { border: 2px solid var(--blue); background: #1a56e8; color: #fff; }
-    .st.closed { color: #9ca3af; text-decoration: line-through; background: #f3f4f6; }
-    .meta { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; font-size: 11px; border-bottom: 1px solid #eee; }
-    .cd { background: var(--red); color: #fff; padding: 2px 6px; border-radius: 6px; font-weight: 700; }
-    .body { flex: 1; padding: 8px; background: var(--bg); overflow: auto; }
-    .line { background: #fff; border-radius: 10px; padding: 8px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; border: 1px solid #e5e7eb; }
-    .g { font-size: 10px; padding: 5px 8px; border-radius: 999px; background: #e5e7eb; white-space: nowrap; cursor: pointer; }
-    .g.on { background: var(--blue); color: #fff; }
-    .balls { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-    .balls i { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #1a56e8; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; font-style: normal; background: #fff; }
-    .balls .sep { width: auto; height: auto; border: 0; font-size: 14px; color: #6b7280; }
-    .entrytop { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; padding: 8px 10px; background: #fff; align-items: end; border-top: 1px solid #eee; }
-    .entrytop small { display: block; font-size: 10px; color: #6b7280; margin-bottom: 4px; font-weight: 700; }
-    .entrytop input { width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 16px; font-weight: 800; }
-    .add { background: var(--green); color: #fff; border: 0; border-radius: 8px; padding: 8px 10px; font-weight: 700; font-size: 12px; }
-    .nav { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid #eee; background: #fff; text-align: center; font-size: 11px; padding: 8px 0; color: #6b7280; }
-    .nav .a { color: var(--blue); font-weight: 700; }
-    .empty { text-align: center; color: #9ca3af; padding: 28px 10px; font-size: 13px; }
-    .tag { font-size: 10px; background: #dbeafe; color: #1e3a8a; padding: 2px 6px; border-radius: 6px; }
-    .offbar { background: #f59e0b; color: #111; font-size: 11px; text-align: center; padding: 4px; font-weight: 700; }
-    .closed { background: #fee2e2; color: #991b1b; text-align: center; padding: 10px; font-size: 12px; font-weight: 700; }
-    .receipt { background: #fff; border: 1px dashed #9ca3af; padding: 12px; border-radius: 8px; font-size: 12px; font-family: ui-monospace, Menlo, Consolas, monospace; }
-    .receipt h3 { text-align: center; margin-bottom: 6px; }
-    .row { display: flex; justify-content: space-between; margin: 3px 0; }
-    .plays { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 2px 8px; font-size: 11px; margin: 6px 0 10px; }
-    .plays b { color: #6b7280; }
-    .btn2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
-    .btn2 button { padding: 10px; border: 0; border-radius: 10px; font-weight: 700; }
-    .print { background: #111; color: #fff; }
-    .wa { background: #25D366; color: #fff; }
-    .cap { font-size: 11px; color: #fff; background: #1e3a8a; padding: 4px 10px; }
-    h4 { font-size: 13px; margin: 6px 0; }
-    table { width: 100%; border-collapse: collapse; font-size: 11px; background: #fff; }
-    th, td { padding: 6px; border-bottom: 1px solid #eee; text-align: left; }
-    .ok { color: var(--green); font-weight: 700; }
-    .pin { display: flex; gap: 8px; justify-content: center; margin: 12px 0; }
-    .pin i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #1d4ed8; display: inline-block; }
-    .pin i.f { background: #1d4ed8; }
-    .note { max-width: 980px; color: #cbd5e1; font-size: 13px; margin-top: 16px; text-align: center; line-height: 1.5; }
+    :root { --navy:#071a4a; --navy2:#0b2a7a; --blue:#1a56e8; --red:#e11d2e; --green:#16a34a; --bg:#f4f6fb; --card:#fff; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:#0a1638; color:#111; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:16px; }
+    .banner { color:#fbbf24; font-size:12px; letter-spacing:.08em; text-transform:uppercase; margin-bottom:10px; }
+    .phones { display:flex; flex-wrap:wrap; gap:18px; justify-content:center; max-width:1400px; }
+    .phone { width:320px; background:#fff; border-radius:28px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,.35); border:8px solid #111; min-height:640px; display:flex; flex-direction:column; }
+    .status { background:var(--navy); color:#fff; font-size:11px; padding:6px 12px; display:flex; justify-content:space-between; }
+    .head { background:linear-gradient(180deg,var(--navy),var(--navy2)); color:#fff; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; }
+    .logo { font-weight:800; font-size:14px; }
+    .bal { background:#0f3d1f; border:1px solid #22c55e; color:#86efac; font-size:10px; padding:4px 8px; border-radius:8px; }
+    .states { display:flex; flex-wrap:nowrap; gap:6px; padding:8px; background:#eef2ff; overflow-x:auto; }
+    .st { background:#fff; border:1px solid #dbe3ff; border-radius:10px; padding:10px 8px; text-align:center; font-size:11px; font-weight:800; color:#0b2a7a; white-space:nowrap; flex:0 0 auto; }
+    .st.on { border:2px solid var(--blue); background:#1a56e8; color:#fff; }
+    .st.closed { color:#9ca3af; text-decoration:line-through; background:#f3f4f6; }
+    .meta { display:flex; justify-content:space-between; align-items:center; padding:8px 10px; font-size:11px; border-bottom:1px solid #eee; }
+    .cd { background:var(--red); color:#fff; padding:2px 6px; border-radius:6px; font-weight:700; }
+    .body { flex:1; padding:8px; background:var(--bg); overflow:auto; }
+    .line { background:#fff; border-radius:10px; padding:8px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; font-size:12px; border:1px solid #e5e7eb; }
+    .g { font-size:10px; padding:5px 8px; border-radius:999px; background:#e5e7eb; cursor:pointer; }
+    .g.on { background:var(--blue); color:#fff; }
+    .balls { display:flex; gap:6px; align-items:center; }
+    .balls i { width:28px; height:28px; border-radius:50%; border:2px solid #1a56e8; display:inline-flex; align-items:center; justify-content:center; font-weight:800; font-style:normal; background:#fff; }
+    .balls .sep { width:auto; height:auto; border:0; color:#6b7280; }
+    .entrytop { display:grid; grid-template-columns:auto 1fr auto; gap:8px; padding:8px 10px; background:#fff; align-items:end; }
+    .entrytop small { display:block; font-size:10px; color:#6b7280; margin-bottom:4px; font-weight:700; }
+    .entrytop input { width:100%; padding:8px; border:1px solid #d1d5db; border-radius:10px; font-size:16px; font-weight:800; }
+    .add { background:var(--green); color:#fff; border:0; border-radius:8px; padding:8px 10px; font-weight:700; }
+    .nav { display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid #eee; background:#fff; text-align:center; font-size:11px; padding:8px 0; color:#6b7280; }
+    .nav .a { color:var(--blue); font-weight:700; }
+    .empty { text-align:center; color:#9ca3af; padding:28px 10px; font-size:13px; }
+    .tag { font-size:10px; background:#dbeafe; color:#1e3a8a; padding:2px 6px; border-radius:6px; }
+    .offbar { background:#f59e0b; color:#111; font-size:11px; text-align:center; padding:4px; font-weight:700; }
+    .closed { background:#fee2e2; color:#991b1b; text-align:center; padding:10px; font-size:12px; font-weight:700; }
+    .receipt { background:#fff; border:1px dashed #9ca3af; padding:12px; border-radius:8px; font-size:12px; font-family:ui-monospace,Menlo,Consolas,monospace; }
+    .receipt h3 { text-align:center; margin-bottom:6px; }
+    .row { display:flex; justify-content:space-between; margin:3px 0; }
+    .plays { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:2px 8px; font-size:11px; margin:6px 0 10px; }
+    .btn2 { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px; }
+    .btn2 button { padding:10px; border:0; border-radius:10px; font-weight:700; }
+    .print { background:#111; color:#fff; }
+    .wa { background:#25D366; color:#fff; }
+    .cap { font-size:11px; color:#fff; background:#1e3a8a; padding:4px 10px; }
+    h4 { font-size:13px; margin:6px 0; }
+    table { width:100%; border-collapse:collapse; font-size:11px; background:#fff; }
+    th,td { padding:6px; border-bottom:1px solid #eee; text-align:left; }
+    .ok { color:var(--green); font-weight:700; }
+    .pin { display:flex; gap:8px; justify-content:center; margin:12px 0; }
+    .pin i { width:14px; height:14px; border-radius:50%; border:2px solid #1d4ed8; display:inline-block; }
+    .pin i.f { background:#1d4ed8; }
+    .note { max-width:980px; color:#cbd5e1; font-size:13px; margin-top:16px; text-align:center; }
     .mizhead { display:flex; justify-content:space-between; font-size:11px; margin-bottom:8px; color:#6b7280; }
-    .mizhead b { color:#111; font-size:12px; }
+    .mizhead b { color:#111; }
     .miz { display:flex; justify-content:space-between; align-items:center; background:#fff; border:1px solid #eee; border-radius:12px; padding:8px; margin-bottom:8px; }
     .miz em { font-size:11px; color:#6b7280; font-style:italic; }
     .mb { display:flex; gap:6px; margin:4px 0; }
     .mb span { width:28px; height:28px; border-radius:50%; background:#15803d; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; }
     .mizr { text-align:right; font-size:12px; font-weight:800; }
-    .achte { background:#c4a35a; color:#111; border:0; border-radius:10px; padding:10px 12px; font-weight:800; }
-    .achte.full { width:100%; display:block; padding:14px; border-radius:12px; font-size:15px; }
+    .achte.full { width:100%; background:#c4a35a; color:#111; border:0; border-radius:12px; padding:14px; font-weight:800; font-size:15px; }
     .bottomnet { padding:8px 10px 12px; background:#fff; border-top:1px solid #eee; }
     .totalline { display:flex; justify-content:space-between; font-size:14px; margin-bottom:8px; }
     .dl { background:#e7c56a; color:#111; }
     .bot3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; padding:8px; background:#f3f4f6; }
-    .bot3 .g, .bot3 .kt { border:0; border-radius:12px; padding:12px 4px; font-weight:800; font-size:11px; color:#fff; }
+    .bot3 .g,.bot3 .kt { border:0; border-radius:12px; padding:12px 4px; font-weight:800; font-size:11px; color:#fff; }
     .bot3 .g { background:#3b6fb6; }
     .bot3 .g.on { background:#c45c3e; }
     .bot3 .kt { background:#2a9d8f; }
+    .timebar { background:#0f172a; color:#e2e8f0; font-size:10px; padding:6px 10px; display:flex; justify-content:space-between; }
+    .timebar b { color:#86efac; }
+    .clockwarn { background:#fef3c7; color:#92400e; font-size:10px; padding:6px 10px; font-weight:700; text-align:center; }
   </style>
 </head>
 <body>
-  <div class="banner">Cash Loto Bolet POS · prototip pibliye</div>
+  <div class="banner">Cash Loto Bolet POS · online</div>
   <div class="phones">
     <div class="phone">
       <div class="cap">1. Vann</div>
       <div class="status"><span>9:41</span><span>LTE · 74%</span></div>
-      <div class="states">
-        <div class="st">FL AM</div>
-        <div class="st on">FL PM</div>
-        <div class="st">NY AM</div>
-        <div class="st">NY PM</div>
-        <div class="st">GA AM</div>
-        <div class="st">GA PM</div>
-        <div class="st">CT AM</div>
-        <div class="st">CT PM</div>
-      </div>
-      <div class="meta">
-        <span>TIKÈ SOU TAB LA</span>
-        <span>Tiraj FL PM <span class="cd">00:48:12</span></span>
-      </div>
+      <div class="timebar"><span>Relòj tel 13:41</span><b>Lè sèvè 14:02 ET</b></div>
+      <div class="clockwarn">Relòj telefòn lan pa bon (−21 min). Fèmen vann sou lè sèvè.</div>
+      <div class="states"><div class="st">FL AM</div><div class="st on">FL PM</div><div class="st">NY AM</div><div class="st">NY PM</div><div class="st">GA AM</div><div class="st">GA PM</div><div class="st">CT AM</div><div class="st">CT PM</div></div>
+      <div class="meta"><span>TIKÈ SOU TAB LA</span><span>Tiraj FL PM <span class="cd">00:48:12</span></span></div>
       <div class="body">
-        <div class="mizhead"><b>MIZ MWEN YO</b><span>Dat tiraj: 28 septanm</span></div>
-        <div class="miz">
-          <div><em>Maryaj</em><div class="mb"><span>25</span><span>55</span></div><span class="tag">Florida PM</span></div>
-          <div class="mizr">10 P<br><small>5×2</small><br>✎ 🗑</div>
-        </div>
-        <div class="miz">
-          <div><em>Bolet</em><div class="mb"><span>17</span></div><span class="tag">Florida PM</span></div>
-          <div class="mizr">5 P<br>✎ 🗑</div>
-        </div>
+        <div class="mizhead"><b>MIZ MWEN YO</b><span>28 septanm</span></div>
+        <div class="miz"><div><em>Maryaj</em><div class="mb"><span>25</span><span>55</span></div><span class="tag">Florida PM</span></div><div class="mizr">10 P<br><small>5×2</small></div></div>
+        <div class="miz"><div><em>Bolet</em><div class="mb"><span>17</span></div><span class="tag">Florida PM</span></div><div class="mizr">5 P</div></div>
       </div>
-      <div class="entrytop">
-        <div><small>Nimewo</small><div class="balls" id="ballslots"></div></div>
-        <div><small>Pwen</small><input value="5" /></div>
-        <button class="add">+</button>
-      </div>
-      <div class="bot3" id="gametabs">
-        <button type="button" class="g" data-game="maryaj">Boul pè</button>
-        <button type="button" class="g on" data-game="bolet">Boul pwent</button>
-        <button type="button" class="kt">Kreye tikè</button>
-      </div>
-      <div class="bottomnet">
-        <div class="totalline"><span>Total Fich:</span><b>P 15</b></div>
-        <button class="achte full">Achte Fich</button>
-      </div>
+      <div class="entrytop"><div><small>Nimewo</small><div class="balls" id="ballslots"></div></div><div><small>Pwen</small><input value="5" /></div><button class="add">+</button></div>
+      <div class="bot3" id="gametabs"><button type="button" class="g" data-game="maryaj">Boul pè</button><button type="button" class="g on" data-game="bolet">Boul pwent</button><button type="button" class="kt">Kreye tikè</button></div>
+      <div class="bottomnet"><div class="totalline"><span>Total Fich:</span><b>P 15</b></div><button class="achte full">Achte Fich</button></div>
     </div>
     <div class="phone">
       <div class="cap">2. Apre Kreye Tikè</div>
-      <div class="status"><span>9:41</span><span>LTE · 74%</span></div>
+      <div class="status"><span>9:41</span><span>LTE</span></div>
       <div class="body">
-        <div class="receipt">
-          <h3>** ORIGINAL **<br>Tikè 10000039</h3>
-          <div class="row"><span>PDV</span><b>PDV-042</b></div>
-          <div class="row"><span>Dat</span><b>09/28/2026 13:31</b></div>
-          <div style="text-align:center;margin:8px 0 4px;font-weight:800">======= FL PM =======</div>
-          <div class="plays"><b>BOUL</b><b>PWEN</b><b>BOUL</b><b>PWEN</b><span>25|55</span><span>10</span><span>17</span><span>5</span></div>
-          <div class="row"><span>TOTAL FICH</span><b>P 15</b></div>
-        </div>
-        <div class="bottomnet">
-          <div class="totalline"><span>Total Fich:</span><b>P 15</b></div>
-          <div class="btn2"><button class="print">Enprime Tikè</button><button class="dl">Telechaje Imaj</button></div>
-          <button class="wa" style="width:100%;margin-top:8px;padding:12px;border:0;border-radius:12px;font-weight:800">Voye sou WhatsApp</button>
-        </div>
+        <div class="receipt"><h3>** ORIGINAL **<br>Tikè 10000039</h3><div class="row"><span>PDV</span><b>PDV-042</b></div><div class="row"><span>Dat</span><b>09/28/2026 14:02 ET</b></div><div style="text-align:center;font-weight:800;margin:8px 0">======= FL PM =======</div><div class="plays"><b>BOUL</b><b>PWEN</b><b>BOUL</b><b>PWEN</b><span>25|55</span><span>10</span><span>17</span><span>5</span></div><div class="row"><span>TOTAL FICH</span><b>P 15</b></div></div>
+        <div class="bottomnet"><div class="totalline"><span>Total Fich:</span><b>P 15</b></div><div class="btn2"><button class="print">Enprime Tikè</button><button class="dl">Telechaje Imaj</button></div><button class="wa" style="width:100%;margin-top:8px;padding:12px;border:0;border-radius:12px;font-weight:800">Voye sou WhatsApp</button></div>
       </div>
     </div>
     <div class="phone">
-      <div class="cap">3. Vant fèmen + offline</div>
+      <div class="cap">3. Offline</div>
       <div class="status"><span>9:41</span><span>Pa gen rezo</span></div>
-      <div class="offbar">OFFLINE — vann yo ap senkronize apre</div>
-      <div class="states">
-        <div class="st closed">FL AM</div><div class="st closed">FL PM</div>
-        <div class="st">NY AM</div><div class="st on">NY PM</div>
-        <div class="st">GA AM</div><div class="st">GA PM</div>
-        <div class="st">CT AM</div><div class="st">CT PM</div>
-      </div>
-      <div class="closed">FL AM ak FL PM fèmen<br>Chwazi NY AM oswa NY PM</div>
-      <div class="meta"><span>NY PM ouvè</span><span class="cd">01:12:40</span></div>
-      <div class="body"><div class="empty">Chanje loteri pou kontinye vann</div></div>
+      <div class="offbar">OFFLINE — senkronize apre</div>
+      <div class="timebar"><span>Dènye senkro 13:55 ET</span><b>Lè sistèm 14:02 ET</b></div>
+      <div class="clockwarn">Relòj tel pa konte. Countdown sou lè sèvè.</div>
+      <div class="states"><div class="st closed">FL AM</div><div class="st closed">FL PM</div><div class="st">NY AM</div><div class="st on">NY PM</div><div class="st">GA AM</div><div class="st">GA PM</div><div class="st">CT AM</div><div class="st">CT PM</div></div>
+      <div class="closed">FL AM / FL PM fèmen sou lè sèvè</div>
       <div class="nav"><div class="a">Vann</div><div>Tikè mwen</div><div>Paramèt</div></div>
     </div>
-    <div class="phone">
-      <div class="cap">4. Tikè mwen</div>
-      <div class="status"><span>9:41</span><span>LTE · 74%</span></div>
-      <div class="head"><div class="logo">TIKÈ MWEN</div><div class="bal">Jodi a<br>HTG 8,350</div></div>
-      <div class="body">
-        <div class="line"><div><b>#FL-18429</b><br><small>13:31 · 3 jwèt</small></div><div><b>175</b><br><span class="tag">Tann tiraj</span></div></div>
-        <div class="line"><div><b>#FL-18410</b><br><small>12:02 · 5 jwèt</small></div><div><b>400</b><br><span class="ok">Gayan 2,000</span></div></div>
-        <div class="line"><div><b>#NY-09112</b><br><small>11:18 · 1 jwèt</small></div><div><b>50</b><br><small>Pa gen</small></div></div>
-        <h4>Rezime jounen</h4>
-        <table>
-          <tr><th>Vant</th><td>42 tikè</td></tr>
-          <tr><th>Total vann</th><td>HTG 8,350</td></tr>
-          <tr><th>Komisyon</th><td>HTG 835</td></tr>
-          <tr><th>Peye gayan</th><td>HTG 2,000</td></tr>
-          <tr><th>Net</th><td><b>HTG 7,185</b></td></tr>
-        </table>
-      </div>
-      <div class="nav"><div>Vann</div><div class="a">Tikè mwen</div><div>Paramèt</div></div>
-    </div>
-    <div class="phone">
-      <div class="cap">5. Paramèt</div>
-      <div class="status"><span>9:41</span><span>LTE · 74%</span></div>
-      <div class="body">
-        <div class="line"><div>Enprimant</div><b class="ok">Konekte · 58mm</b></div>
-        <div class="line"><div>Lang</div><b>Kreyòl</b></div>
-        <div class="line"><div>Timeout</div><b>3 min</b></div>
-        <div class="line"><div>Mòd offline</div><b>Aktif</b></div>
-        <div class="line"><div>WhatsApp fich</div><b>Aktif</b></div>
-        <h4>PIN anile tikè</h4>
-        <div class="pin"><i class="f"></i><i class="f"></i><i class="f"></i><i></i></div>
-      </div>
-      <div class="nav"><div>Vann</div><div>Tikè mwen</div><div class="a">Paramèt</div></div>
-    </div>
-    <div class="phone">
-      <div class="cap">6. Paramèt Enprimant</div>
-      <div class="status"><span>9:41</span><span>BT ON</span></div>
-      <div class="body">
-        <div class="line"><div>Estati</div><b class="ok">Konekte</b></div>
-        <div class="line"><div>Machin</div><b>XP-P300</b></div>
-        <div class="line"><div>MAC</div><b>00:22:15:A3:9C:10</b></div>
-        <div class="line"><div>PIN Bluetooth</div><b>1234</b></div>
-        <h4>Papye ESC/POS</h4>
-        <div class="line"><div>Lajè</div><b>58 mm</b></div>
-        <div class="line"><div>Karaktè / liy</div><b>32</b></div>
-        <div class="line"><div>DPI</div><b>203</b></div>
-        <div class="line"><div>Code page</div><b>CP1252</b></div>
-        <div class="line"><div>Dansite</div><b>Nòmal</b></div>
-        <div class="line"><div>Koupe</div><b>Non · chire</b></div>
-        <h4>Apre Kreye Tikè</h4>
-        <div class="line"><div>Enprime otomatik</div><b>Aktif</b></div>
-        <div class="line"><div>Fich sou ekran</div><b>Wi</b></div>
-        <div class="line"><div>Si echwe</div><b>Eseye ankò</b></div>
-        <button class="print" style="width:100%;margin-top:10px;padding:12px;border-radius:12px">Tès enprime</button>
-        <button class="dl" style="width:100%;margin-top:6px;padding:12px;border:0;border-radius:12px;font-weight:800">Chèche lòt machin</button>
-      </div>
-    </div>
   </div>
-  <p class="note">Pre-fich → Kreye Tikè → Fich + Enprime / WhatsApp</p>
+  <p class="note">Online: https://github.com/Maboo12544/cash-loto-bolet-pos</p>
   <script>
-    const slots = { bolet: 2, maryaj: [2, 2], c3: 3, c4: 4 };
-    function renderSlots(game) {
-      const el = document.getElementById('ballslots');
-      if (!el) return;
-      el.innerHTML = '';
-      const spec = slots[game];
-      const groups = Array.isArray(spec) ? spec : [spec];
-      groups.forEach((n, gi) => {
-        if (gi) { const s = document.createElement('i'); s.className = 'sep'; s.textContent = '–'; el.appendChild(s); }
-        for (let i = 0; i < n; i++) el.appendChild(document.createElement('i'));
-      });
-    }
-    document.getElementById('gametabs')?.addEventListener('click', (e) => {
-      const t = e.target.closest('.g');
-      if (!t) return;
-      document.querySelectorAll('#gametabs .g').forEach(x => x.classList.remove('on'));
-      t.classList.add('on');
-      renderSlots(t.dataset.game);
-    });
+    const slots={bolet:2,maryaj:[2,2],c3:3,c4:4};
+    function renderSlots(game){const el=document.getElementById('ballslots');if(!el)return;el.innerHTML='';const spec=slots[game];const groups=Array.isArray(spec)?spec:[spec];groups.forEach((n,gi)=>{if(gi){const s=document.createElement('i');s.className='sep';s.textContent='–';el.appendChild(s);}for(let i=0;i<n;i++)el.appendChild(document.createElement('i'));});}
+    document.getElementById('gametabs')?.addEventListener('click',e=>{const t=e.target.closest('.g');if(!t)return;document.querySelectorAll('#gametabs .g').forEach(x=>x.classList.remove('on'));t.classList.add('on');renderSlots(t.dataset.game);});
     renderSlots('bolet');
   </script>
 </body>
