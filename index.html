@@ -177,7 +177,6 @@ el('todayBtn').onclick=()=>show("Today's tickets",rows(st.tickets.filter(t=>new 
 el('printBtn').onclick=el('quickPrint').onclick=()=>{if(!st.cart.length)return alert('Pa gen fich.');afterTicket(st.cart)};
 el('moneyBtn').onclick=()=>show('Balance','<div class="row"><span>Balance</span><b>'+fmt(st.balance)+'</b></div>');
 el('copyBtn').onclick=async()=>{const t=st.tickets[0];if(!t)return alert('Pa gen tikè.');try{await navigator.clipboard.writeText('Cash Loto '+t.number+' '+fmt(t.amount));alert('Kopye')}catch(e){alert(e.message)}};
-el('calendarBtn').onclick=()=>el('todayBtn').click();
 el('posBtn').onclick=()=>show('POS','<div class="row"><span>PDV</span><b>pos1</b></div>');
 el('menuBtn').onclick=()=>printerPanel();
 el('reportBtn').onclick=()=>show('Rapò','<div class="row"><span>Sales</span><b>'+fmt(st.sales)+'</b></div>');
