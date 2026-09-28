@@ -74,13 +74,15 @@
     .timebar { background:#0f172a; color:#e2e8f0; font-size:10px; padding:6px 10px; display:flex; justify-content:space-between; }
     .timebar b { color:#86efac; }
     .clockwarn { background:#fef3c7; color:#92400e; font-size:10px; padding:6px 10px; font-weight:700; text-align:center; }
+  
+    .login{position:fixed;inset:0;background:#071a4a;z-index:99;display:flex;align-items:center;justify-content:center;padding:20px}.login-card{width:min(360px,100%);background:#fff;border-radius:22px;padding:22px;box-shadow:0 24px 60px #0008}.login-card h2{color:#071a4a;margin-bottom:4px}.login-card p{color:#64748b;font-size:12px;margin-bottom:16px}.login-card input{width:100%;padding:13px;border:1px solid #cbd5e1;border-radius:11px;margin:5px 0;font-size:15px}.login-card button{width:100%;padding:13px;border:0;border-radius:11px;background:#1a56e8;color:#fff;font-weight:800;margin-top:8px}.appbar{display:flex;gap:8px;align-items:center}.money{background:#052e16;border:1px solid #22c55e;color:#86efac;padding:5px 8px;border-radius:8px;font-size:10px;font-weight:800}.sportbox{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:10px;margin:8px}.sportrow{display:flex;justify-content:space-between;gap:8px;align-items:center;border-bottom:1px solid #eee;padding:9px 0;font-size:11px}.sportrow:last-child{border:0}.sportrow button{background:#0b2a7a;color:#fff;border:0;border-radius:8px;padding:7px 9px}.danger{color:#b91c1c;font-size:10px;font-weight:700}.hidden{display:none!important}@media print{body{background:#fff;padding:0}.banner,.phones>.phone:not(.print-target),.cap,.status,.btn2,.wa,.nav,.bottomnet,.timebar,.clockwarn{display:none!important}.phones{display:block}.phone.print-target{border:0;box-shadow:none;width:58mm;min-height:0;border-radius:0}.phone.print-target .body{padding:0;background:#fff}.receipt{border:0}}
   </style>
 </head>
-<body>
-  <div class="banner">Cash Loto Bolet POS · online</div>
+<body><div class="login" id="login"><div class="login-card"><h2>Cash Loto POS</h2><p>Konekte ak kòd pwen de vant ou.</p><input id="pdv" placeholder="Kòd PDV" value="POSTEST01"><input id="pin" type="password" inputmode="numeric" placeholder="PIN"><button id="loginBtn">Konekte</button><p id="loginMsg" class="danger"></p></div></div>
+  <div class="banner">Cash Loto POS Fizik · <span id="netstate">online</span> · <span id="who">—</span> · Balance <span id="balance">$0.00</span></div>
   <div class="phones">
     <div class="phone">
-      <div class="cap">1. Vann</div>
+      <div class="cap appbar"><span>1. Vann</span><span class="money" id="balmini">$0.00</span><button id="logout" style="margin-left:auto;border:0;border-radius:7px;padding:4px 7px">Soti</button></div>
       <div class="status"><span>9:41</span><span>LTE · 74%</span></div>
       <div class="timebar"><span>Relòj tel 13:41</span><b>Lè sèvè 14:02 ET</b></div>
       <div class="clockwarn">Relòj telefòn lan pa bon (−21 min). Fèmen vann sou lè sèvè.</div>
@@ -92,15 +94,17 @@
         <div class="miz"><div><em>Bolet</em><div class="mb"><span>17</span></div><span class="tag">Florida PM</span></div><div class="mizr">$5.00</div></div>
       </div>
       <div class="entrytop"><div><small>Nimewo</small><div class="balls" id="ballslots"></div></div><div><small>Montan</small><input value="5" /></div><button class="add">+</button></div>
-      <div class="bot3" id="gametabs"><button type="button" class="g" data-game="maryaj">Boul pè</button><button type="button" class="g on" data-game="bolet">Boul pwent</button><button type="button" class="kt">Kreye tikè</button></div>
-      <div class="bottomnet"><div class="totalline"><span>Total Fich:</span><b>$15.00</b></div><button class="achte full">Achte Fich</button></div>
+      <div class="bot3" id="gametabs"><button type="button" class="g" data-game="maryaj">Boul pè</button><button type="button" class="g on" data-game="bolet">Bolet</button><button type="button" class="g" data-game="sport">Sport</button></div>
+<div class="sportbox hidden" id="sportbox"><b>SPORT</b><div class="sportrow"><span>Football · Match 1<br><small>1X2</small></span><button data-odd="1.85">1 · 1.85</button><button data-odd="3.10">X · 3.10</button><button data-odd="2.25">2 · 2.25</button></div><div class="sportrow"><span>Football · Match 2<br><small>1X2</small></span><button data-odd="2.05">1 · 2.05</button><button data-odd="2.95">X · 2.95</button><button data-odd="1.95">2 · 1.95</button></div><small>Odds demo lokal; konekte sports API anvan pwodiksyon.</small></div>
+<div class="bottomnet"><div class="danger" id="limitmsg"></div><button class="achte full" id="createTicket">Kreye Tikè</button></div>
+      <div class="bottomnet"><div class="totalline"><span>Total Fich:</span><b>$15.00</b></div><button class="achte full" id="buyTicket">Achte Fich</button></div>
     </div>
     <div class="phone">
       <div class="cap">2. Apre Kreye Tikè</div>
       <div class="status"><span>9:41</span><span>LTE</span></div>
       <div class="body">
         <div class="receipt"><h3>** ORIGINAL **<br>Tikè 10000039</h3><div class="row"><span>PDV</span><b>PDV-042</b></div><div class="row"><span>Dat</span><b>09/28/2026 14:02 ET</b></div><div style="text-align:center;font-weight:800;margin:8px 0">======= FL PM =======</div><div class="plays"><b>BOUL</b><b>MONTAN</b><b>BOUL</b><b>MONTAN</b><span>25|55</span><span>10</span><span>17</span><span>5</span></div><div class="row"><span>TOTAL FICH</span><b>$15.00</b></div></div>
-        <div class="bottomnet"><div class="totalline"><span>Total Fich:</span><b>$15.00</b></div><div class="btn2"><button class="print">Enprime Tikè</button><button class="dl">Telechaje Imaj</button></div><button class="wa" style="width:100%;margin-top:8px;padding:12px;border:0;border-radius:12px;font-weight:800">Voye sou WhatsApp</button></div>
+        <div class="bottomnet"><div class="totalline"><span>Total Fich:</span><b>$15.00</b></div><div class="btn2"><button class="print" id="printTicket">Enprime Tikè</button><button class="dl">Telechaje Imaj</button></div><button class="wa" style="width:100%;margin-top:8px;padding:12px;border:0;border-radius:12px;font-weight:800">Voye sou WhatsApp</button></div>
       </div>
     </div>
     <div class="phone">
@@ -115,11 +119,26 @@
     </div>
   </div>
   <p class="note">Online: https://github.com/Maboo12544/cash-loto-bolet-pos</p>
-  <script>
-    const slots={bolet:2,maryaj:[2,2],c3:3,c4:4};
-    function renderSlots(game){const el=document.getElementById('ballslots');if(!el)return;el.innerHTML='';const spec=slots[game];const groups=Array.isArray(spec)?spec:[spec];groups.forEach((n,gi)=>{if(gi){const s=document.createElement('i');s.className='sep';s.textContent='–';el.appendChild(s);}for(let i=0;i<n;i++)el.appendChild(document.createElement('i'));});}
-    document.getElementById('gametabs')?.addEventListener('click',e=>{const t=e.target.closest('.g');if(!t)return;document.querySelectorAll('#gametabs .g').forEach(x=>x.classList.remove('on'));t.classList.add('on');renderSlots(t.dataset.game);});
-    renderSlots('bolet');
-  </script>
+  
+<script>
+const STORE='cashloto-pos-v1';
+const state=JSON.parse(localStorage.getItem(STORE)||'null')||{pdv:'',balance:10000,tickets:[],liability:{},limitPerNumber:200,perTicket:200};
+const save=()=>localStorage.setItem(STORE,JSON.stringify(state));
+const money=n=>'$'+Number(n||0).toFixed(2);
+function refresh(){document.getElementById('balance').textContent=money(state.balance);document.getElementById('balmini').textContent=money(state.balance);document.getElementById('who').textContent=state.pdv||'—';document.getElementById('netstate').textContent=navigator.onLine?'online':'offline';}
+function showApp(){document.getElementById('login').classList.add('hidden');refresh();}
+document.getElementById('loginBtn').onclick=()=>{const pdv=document.getElementById('pdv').value.trim().toUpperCase(),pin=document.getElementById('pin').value.trim();if(!pdv||pin.length<4){document.getElementById('loginMsg').textContent='Antre kòd PDV ak PIN (4+ chif).';return}state.pdv=pdv;save();showApp()};
+document.getElementById('logout').onclick=()=>{state.pdv='';save();document.getElementById('login').classList.remove('hidden')};
+if(state.pdv)showApp(); else refresh();
+addEventListener('online',refresh);addEventListener('offline',refresh);
+const slots={bolet:2,maryaj:[2,2]};
+function renderSlots(game){const el=document.getElementById('ballslots');if(!el)return;if(game==='sport'){el.innerHTML='<span class="tag">Chwazi match anba</span>';return}el.innerHTML='';const spec=slots[game]||2;const groups=Array.isArray(spec)?spec:[spec];groups.forEach((n,gi)=>{if(gi){const s=document.createElement('i');s.className='sep';s.textContent='–';el.appendChild(s)}for(let i=0;i<n;i++)el.appendChild(document.createElement('i'))})}
+document.getElementById('gametabs').addEventListener('click',e=>{const t=e.target.closest('.g');if(!t)return;document.querySelectorAll('#gametabs .g').forEach(x=>x.classList.remove('on'));t.classList.add('on');const game=t.dataset.game;document.getElementById('sportbox').classList.toggle('hidden',game!=='sport');renderSlots(game)});
+renderSlots('bolet');
+function validateSale(amount,number='17',draw='FL PM'){const msg=document.getElementById('limitmsg');msg.textContent='';if(!navigator.onLine){msg.textContent='Offline: nouvo vant bloke jiskaske rezo retounen.';return false}if(amount<=0||amount>state.perTicket){msg.textContent='Limit pa fich: '+money(state.perTicket);return false}const key=draw+':'+number,used=state.liability[key]||0;if(used+amount>state.limitPerNumber){msg.textContent='Boul sa rive nan limit. Disponib: '+money(Math.max(0,state.limitPerNumber-used));return false}if(amount>state.balance){msg.textContent='Balance PDV pa sifi.';return false}state.liability[key]=used+amount;return true}
+document.getElementById('buyTicket').onclick=()=>{const amount=15;if(!validateSale(amount))return;state.balance-=amount;state.tickets.unshift({id:Date.now(),pdv:state.pdv,amount,draw:'FL PM',status:'ORIGINAL',at:new Date().toISOString()});save();refresh();alert('Tikè valide · '+money(amount))};
+document.getElementById('createTicket').onclick=()=>document.getElementById('buyTicket').click();
+document.getElementById('printTicket').onclick=()=>{const p=document.querySelectorAll('.phone')[1];p.classList.add('print-target');window.print();setTimeout(()=>p.classList.remove('print-target'),300)};
+</script>
 </body>
 </html>
