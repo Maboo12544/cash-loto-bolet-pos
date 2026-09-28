@@ -1,19 +1,23 @@
-# Cash Loto Bolet POS
+# Cash Loto Bolet POS — FINAL
 
-Prototip ekran PDV.
+Sit: https://maboo12544.github.io/cash-loto-bolet-pos/
+Repo: https://github.com/Maboo12544/cash-loto-bolet-pos
 
-## Sit
+Prototip PDV (PWA). Vann lokal, fich, enprime, WhatsApp, offline shell.
 
-Apre premye aktivasyon Pages:
-https://maboo12544.github.io/cash-loto-bolet-pos/
+## Sa ki nan vèsyon final
+- Keypad POS (pa klavye telefòn)
+- Bolet = 2 chif, ENTER → fich BOUL/PWEN
+- Enprime + WhatsApp
+- FL / NY / GA / CT AM-PM
+- Countdown sou lè ET
+- Ban offline + avètisman relòj
+- PWA + service worker
 
-## Aktive Pages (1 fwa)
+## Pa nan prototip sa (bezwen backend)
+- Sèvè / senkron tikè
+- ESC/POS Bluetooth
+- Rezilta tiraj ofisyèl 50× 20× 10×
+- Super Admin, kredi, PIN anile, LEH
 
-1. https://github.com/Maboo12544/cash-loto-bolet-pos/settings/pages
-2. **Source** = GitHub Actions
-3. Save
-4. Actions → **Deploy GitHub Pages** → Run workflow
-
-Apre sa, chak push sou `main` mete sit la ajou.
-
-`.nojekyll` evite Jekyll kraze HTML la.
+Chak push `main` deploy Pages otomatik.
