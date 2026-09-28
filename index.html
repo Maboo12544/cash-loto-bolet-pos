@@ -2,15 +2,20 @@
 <html lang="ht">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#071a4a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Cash Loto POS" />
+  <link rel="manifest" href="./manifest.webmanifest" />
   <title>Cash Loto Bolet POS</title>
   <style>
     :root { --navy:#071a4a; --navy2:#0b2a7a; --blue:#1a56e8; --red:#e11d2e; --green:#16a34a; --bg:#f4f6fb; --card:#fff; }
     * { box-sizing:border-box; margin:0; padding:0; }
-    body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:#0a1638; color:#111; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:16px; }
-    .banner { color:#fbbf24; font-size:12px; letter-spacing:.08em; text-transform:uppercase; margin-bottom:10px; }
-    .phones { display:flex; flex-wrap:wrap; gap:18px; justify-content:center; max-width:1400px; }
-    .phone { width:320px; background:#fff; border-radius:28px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,.35); border:8px solid #111; min-height:640px; display:flex; flex-direction:column; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:#fff; color:#111; min-height:100dvh; margin:0; padding:0; overflow-x:hidden; }
+    .banner { display:none; }
+    .phones { display:block; width:100%; max-width:520px; margin:0 auto; }
+    .phone { width:100%; background:#fff; border-radius:0; overflow:hidden; box-shadow:none; border:0; min-height:100dvh; display:flex; flex-direction:column; }
     .status { background:var(--navy); color:#fff; font-size:11px; padding:6px 12px; display:flex; justify-content:space-between; }
     .head { background:linear-gradient(180deg,var(--navy),var(--navy2)); color:#fff; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; }
     .logo { font-weight:800; font-size:14px; }
@@ -76,6 +81,7 @@
     .clockwarn { background:#fef3c7; color:#92400e; font-size:10px; padding:6px 10px; font-weight:700; text-align:center; }
   
     .login{position:fixed;inset:0;background:#071a4a;z-index:99;display:flex;align-items:center;justify-content:center;padding:20px}.login-card{width:min(360px,100%);background:#fff;border-radius:22px;padding:22px;box-shadow:0 24px 60px #0008}.login-card h2{color:#071a4a;margin-bottom:4px}.login-card p{color:#64748b;font-size:12px;margin-bottom:16px}.login-card input{width:100%;padding:13px;border:1px solid #cbd5e1;border-radius:11px;margin:5px 0;font-size:15px}.login-card button{width:100%;padding:13px;border:0;border-radius:11px;background:#1a56e8;color:#fff;font-weight:800;margin-top:8px}.appbar{display:flex;gap:8px;align-items:center}.money{background:#052e16;border:1px solid #22c55e;color:#86efac;padding:5px 8px;border-radius:8px;font-size:10px;font-weight:800}.sportbox{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:10px;margin:8px}.sportrow{display:flex;justify-content:space-between;gap:8px;align-items:center;border-bottom:1px solid #eee;padding:9px 0;font-size:11px}.sportrow:last-child{border:0}.sportrow button{background:#0b2a7a;color:#fff;border:0;border-radius:8px;padding:7px 9px}.danger{color:#b91c1c;font-size:10px;font-weight:700}.hidden{display:none!important}@media print{body{background:#fff;padding:0}.banner,.phones>.phone:not(.print-target),.cap,.status,.btn2,.wa,.nav,.bottomnet,.timebar,.clockwarn{display:none!important}.phones{display:block}.phone.print-target{border:0;box-shadow:none;width:58mm;min-height:0;border-radius:0}.phone.print-target .body{padding:0;background:#fff}.receipt{border:0}}
+  .phones>.phone:nth-child(2),.phones>.phone:nth-child(3){display:none}.cap{padding-top:max(8px,env(safe-area-inset-top))}.bottomnet{padding-bottom:max(12px,env(safe-area-inset-bottom))}.install{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:30;border:0;border-radius:999px;background:#071a4a;color:#fff;padding:10px 14px;font-weight:800;box-shadow:0 8px 24px #0003}
   </style>
 </head>
 <body><div class="login" id="login"><div class="login-card"><h2>Cash Loto POS</h2><p>Konekte ak kòd pwen de vant ou.</p><input id="pdv" placeholder="Kòd PDV" value="POSTEST01"><input id="pin" type="password" inputmode="numeric" placeholder="PIN"><button id="loginBtn">Konekte</button><p id="loginMsg" class="danger"></p></div></div>
@@ -140,5 +146,11 @@ document.getElementById('buyTicket').onclick=()=>{const amount=15;if(!validateSa
 document.getElementById('createTicket').onclick=()=>document.getElementById('buyTicket').click();
 document.getElementById('printTicket').onclick=()=>{const p=document.querySelectorAll('.phone')[1];p.classList.add('print-target');window.print();setTimeout(()=>p.classList.remove('print-target'),300)};
 </script>
-</body>
+<button id="installBtn" class="install hidden">Enstale App</button>
+<script>
+let installPrompt=null;
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;document.getElementById('installBtn')?.classList.remove('hidden')});
+document.getElementById('installBtn')?.addEventListener('click',async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;document.getElementById('installBtn').classList.add('hidden')});
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));
+</script></body>
 </html>
