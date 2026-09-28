@@ -29,6 +29,7 @@ footer{flex:0 0 auto;text-align:center;background:#fff;margin-top:7px;padding:10
   @media(max-height:760px){.top{height:64px}.stats{height:56px}.tabs{padding:6px 10px}.tabs button{padding:9px}.tools{padding-bottom:6px}.tools button{min-height:36px}.draw{min-height:56px;margin-bottom:6px}.inputs input{height:44px}.keys{gap:4px}.keys button{font-size:23px}footer{padding-top:6px;padding-bottom:max(6px,env(safe-area-inset-bottom))}}
 button{-webkit-tap-highlight-color:transparent;user-select:none}input{font-size:16px!important}
 .gamepick{font-size:14px!important;background:#e8edf5!important;color:#142136!important}.gamepick.selected{background:#1769e8!important;color:#fff!important;outline:3px solid #f4c542;outline-offset:-3px}.keys .print,.keys .cal,.keys .muted{font-size:14px}
+.gamebar{display:flex;gap:5px;padding:0 10px 8px;overflow-x:auto;scrollbar-width:none}.gamebar::-webkit-scrollbar{display:none}.gamebar button{flex:1 0 auto;border:1px solid #d7dce5;background:#fff;color:#15233d;border-radius:9px;padding:8px 10px;font-size:12px;font-weight:800}.gamebar button.active{background:#1769e8;color:#fff;border-color:#1769e8}
 </style>
 </head>
 <body>
@@ -41,6 +42,7 @@ button{-webkit-tap-highlight-color:transparent;user-select:none}input{font-size:
 <div class="timebar"><span id="phoneTime">Relòj tel</span><b id="serverTime">Lè sèvè ET</b></div>
 <div class="clockwarn" id="clockwarn" style="display:none">Relòj telefòn lan pa bon. Fèmen vann sou lè sèvè.</div>
 <button class="draw" id="drawBtn"><span>🟢</span><b id="drawName">FLORIDA PM</b><small>Closing : <em id="countdown">--:--:--</em></small><i>⌄</i></button>
+<section class="gamebar"><button class="active" data-mode="B">Bolet</button><button data-mode="M">Mariage</button><button data-mode="P">Palé</button><button data-mode="3">Loto 3</button><button data-mode="4">Loto 4</button></section>
 <section class="inputs"><input id="number" inputmode="none" readonly maxlength="5"><input id="amount" inputmode="none" readonly value="0.00"><input id="limit" value="200" readonly></section>
 <section class="keys">
 <button class="green" data-key="back">⌫</button>
@@ -114,7 +116,7 @@ function sync(){
   el('tc').textContent=st.tickets.length;
   el('plays').textContent=st.cart.reduce((a,t)=>a+t.amount,0).toFixed(2);
   el('drawName').textContent=st.draw;
-  document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('selected',b.dataset.mode===st.mode));
+  document.querySelectorAll('[data-mode]').forEach(b=>{b.classList.toggle('selected',b.dataset.mode===st.mode);b.classList.toggle('active',b.dataset.mode===st.mode)});
   el('offbar').classList.toggle('on',!navigator.onLine);
 }
 function rows(a){return a.length?a.map(t=>'<div class="row"><span><b>'+t.number+'</b> · '+t.draw+' · '+t.mode+'</span><b>'+fmt(t.amount)+'</b></div>').join(''):'<p>Pa gen tikè.</p>'}
@@ -160,8 +162,9 @@ el('enter').onclick=()=>{
   if(st.mode==='M'&&!marriageFirst){if(n.length!==2)return alert('Mariage: antre premye boul 2 chif.');marriageFirst=n;num.value='';return;}
   if(st.mode==='M'){if(n.length!==2)return alert('Mariage: antre dezyèm boul 2 chif.');n=marriageFirst+'-'+n;marriageFirst='';}
   else if(st.mode==='B'&&n.length!==2)return alert('Bolet = 2 chif.');
-  else if(st.mode==='D'&&n.length!==2)return alert('Direto = 2 chif.');
-  else if(st.mode==='Q'&&(n.length<3||n.length>4))return alert('Loto = 3 oswa 4 chif.');
+  else if(st.mode==='P'&&n.length!==2)return alert('Palé = 2 chif.');
+  else if(st.mode==='3'&&n.length!==3)return alert('Loto 3 = 3 chif.');
+  else if(st.mode==='4'&&n.length!==4)return alert('Loto 4 = 4 chif.');
   if(!a||a<=0){a=Number(st.lastAmount||0);if(!a)return alert('Antre montan an.');amt.value=a.toFixed(2);}
   if(a>200)return alert('Limit $200.');if(a>st.balance)return alert('Balance pa sifi.');
   const t={id:Date.now(),number:n,amount:a,draw:st.draw,mode:st.mode,at:new Date().toISOString()};
