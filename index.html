@@ -110,7 +110,7 @@ function sync(){
   el('final').textContent=fmt(st.balance);
   el('sales').textContent=fmt(st.sales);
   el('comm').textContent=fmt(st.sales*0.1);
-  el('tc').textContent=st.tickets.length;
+  el('tc').textContent=st.cart.length;
   el('plays').textContent=st.cart.reduce((a,t)=>a+t.amount,0).toFixed(2);
   el('drawName').textContent=st.draw;
   document.querySelectorAll('#gamebar [data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===st.mode));
