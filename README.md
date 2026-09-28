@@ -1,7 +1,19 @@
 # Cash Loto Bolet POS
 
-Prototip ekran Point de Vente.
+Prototip ekran PDV.
 
-Ouvri [index.html](index.html) nan navigatè.
+## Sit
 
-Repo: https://github.com/Maboo12544/cash-loto-bolet-pos
+Apre premye aktivasyon Pages:
+https://maboo12544.github.io/cash-loto-bolet-pos/
+
+## Aktive Pages (1 fwa)
+
+1. https://github.com/Maboo12544/cash-loto-bolet-pos/settings/pages
+2. **Source** = GitHub Actions
+3. Save
+4. Actions → **Deploy GitHub Pages** → Run workflow
+
+Apre sa, chak push sou `main` mete sit la ajou.
+
+`.nojekyll` evite Jekyll kraze HTML la.
