@@ -2,29 +2,10 @@
   const CV = () => global.CashVirtual;
   const GAME = 'roulette';
 
-  function buildWheelSVG() {
-    const order = CV().EU_ORDER;
-    const n = order.length;
-    const step = 360 / n;
-    let paths = '';
-    order.forEach((num, i) => {
-      const a0 = ((i * step - 90) * Math.PI) / 180;
-      const a1 = (((i + 1) * step - 90) * Math.PI) / 180;
-      const x0 = 100 + 95 * Math.cos(a0);
-      const y0 = 100 + 95 * Math.sin(a0);
-      const x1 = 100 + 95 * Math.cos(a1);
-      const y1 = 100 + 95 * Math.sin(a1);
-      const color = num === 0 ? '#0f7a3a' : CV().colorOf(num) === 'red' ? '#c62828' : '#1a1f2b';
-      paths += `<path d="M100,100 L${x0},${y0} A95,95 0 0,1 ${x1},${y1} Z" fill="${color}" stroke="#0d2744" stroke-width="0.4"/>`;
-      const mid = ((i + 0.5) * step - 90) * Math.PI / 180;
-      const tx = 100 + 72 * Math.cos(mid);
-      const ty = 100 + 72 * Math.sin(mid);
-      paths += `<text x="${tx}" y="${ty}" fill="#fff" font-size="5.2" font-weight="800" text-anchor="middle" dominant-baseline="middle" transform="rotate(${i * step},${tx},${ty})">${num}</text>`;
-    });
-    return `<svg class="wheel-svg" viewBox="0 0 200 200" aria-label="Wou Ewopeyen">${paths}
-      <circle cx="100" cy="100" r="22" fill="#008f96" stroke="#9ef0d4" stroke-width="3"/>
-      <circle cx="100" cy="100" r="8" fill="#fff"/>
-    </svg>`;
+  function paintWheel(canvas, rot, highlight) {
+    if (global.CashArt && global.CashArt.drawEuWheel) {
+      global.CashArt.drawEuWheel(canvas, rot || 0, highlight);
+    }
   }
 
   function evalBets(bets, winning) {
@@ -78,11 +59,11 @@
           <h1 style="margin:0;font-size:1.1rem">Woulèt</h1>
           <button class="btn ghost" type="button" data-rules>Règ</button>
         </div>
-        <div class="demo-banner">Demonstrasyon · Wou Ewopeyen 0–36 · Kredi vityèl · Pa RNG sètifye</div>
+        <p class="muted" style="margin:0 0 6px">Wou Ewopeyen 0–36 · kredi vityèl · pa RNG sètifye</p>
         <span class="phase-pill" data-phase>SELEKSYON</span>
         <div class="roulette-layout">
           <div class="wheel-wrap">
-            <div data-wheel style="width:100%;height:100%;transform:rotate(0deg)">${buildWheelSVG()}</div>
+            <canvas data-wheel-canvas width="560" height="560" style="width:100%;height:100%;border-radius:50%"></canvas>
             <div class="ball-orbit" data-orbit><div class="ball-dot" data-ball></div></div>
           </div>
           <div class="roulette-result" data-winnum>—</div>
@@ -220,27 +201,35 @@
     }
 
     async function spinTo(number) {
-      const wheel = $('[data-wheel]');
+      const canvas = $('[data-wheel-canvas]');
       const ball = $('[data-ball]');
       const ms = CV().animDuration(cfg.roundMs);
       const target = angleForNumber(number);
-      // Rotate wheel so winning pocket lands at top pointer (0 deg visual top)
       const spins = 4;
       const final = spins * 360 + (360 - target);
       if (!ms) {
-        wheel.style.transition = 'none';
-        wheel.style.transform = `rotate(${final}deg)`;
+        paintWheel(canvas, final, number);
         ball.style.transition = 'none';
         ball.style.transform = `rotate(${target}deg)`;
         return;
       }
       CV().Sfx.spin();
-      wheel.style.transition = `transform ${ms}ms cubic-bezier(.12,.75,.16,1)`;
-      wheel.style.transform = `rotate(${final}deg)`;
+      const start = performance.now();
+      const startRot = 0;
       ball.style.transition = `transform ${ms}ms cubic-bezier(.05,.7,.1,1)`;
       ball.style.transform = `rotate(${spins * 360 + target + 360}deg)`;
-      await CV().wait(ms);
-      // Snap ball relative to pocket
+      await new Promise((resolve) => {
+        function frame(now) {
+          const t = Math.min(1, (now - start) / ms);
+          const ease = 1 - Math.pow(1 - t, 3);
+          const rot = startRot + (final - startRot) * ease;
+          paintWheel(canvas, rot, t > 0.92 ? number : null);
+          if (t < 1) requestAnimationFrame(frame);
+          else resolve();
+        }
+        requestAnimationFrame(frame);
+      });
+      paintWheel(canvas, final, number);
       ball.style.transition = 'none';
       ball.style.transform = `rotate(${target}deg)`;
     }
@@ -347,6 +336,8 @@
     };
     $('[data-spin]').onclick = doSpin;
 
+    const canvas = $('[data-wheel-canvas]');
+    if (canvas) paintWheel(canvas, 0, null);
     syncChips();
     syncHistory();
     resumeIfNeeded();

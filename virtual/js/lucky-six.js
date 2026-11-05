@@ -25,7 +25,7 @@
           <h1 style="margin:0;font-size:1.1rem">Lucky Six</h1>
           <button class="btn ghost" type="button" data-rules>Règ</button>
         </div>
-        <div class="demo-banner">Demonstrasyon · Kredi vityèl · Pa RNG sètifye · Règ pwovizwa (pa NSoft)</div>
+        <p class="muted" style="margin:0 0 6px">Kredi vityèl · règle pwototip · pa RNG sètifye</p>
         <span class="phase-pill" data-phase>SELEKSYON</span>
         <div class="panel">
           <div class="row-between"><h3>Fich ou</h3><span class="muted" data-count>0 / ${cfg.pickCount}</span></div>
@@ -44,6 +44,7 @@
         </div>
         <div class="num-grid cols-8" data-grid></div>
         <div class="stage machine" data-stage>
+          <div class="machine-frame" aria-hidden="true"></div>
           <div class="machine-bowl" aria-hidden="true"></div>
           <div class="drawn-lane" data-drawn></div>
         </div>
@@ -62,6 +63,7 @@
       return ({ select: 'SELEKSYON', locked: 'SELEKSYON FÈMEN', animating: 'TIRAJ', settled: 'REZILTA' }[p] || p);
     }
 
+    const BALL_COLORS = ['#ff1537','#135dff','#ff9900','#00c766','#00b9e3','#155eff','#e51a32','#858591','#00be75','#008d80','#08bada','#eebf11','#c111cf','#9844e6','#ff7622','#dd1835'];
     function paintGrid() {
       const grid = $('[data-grid]');
       grid.innerHTML = '';
@@ -71,6 +73,7 @@
         b.className = 'ball-btn';
         b.textContent = n;
         b.dataset.n = n;
+        b.style.setProperty('--ball', BALL_COLORS[(n - 1) % BALL_COLORS.length]);
         if (selection.has(n)) b.classList.add('selected');
         b.disabled = busy;
         b.onclick = () => {

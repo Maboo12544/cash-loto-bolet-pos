@@ -6,16 +6,15 @@
   const COLORS = ['#008f96', '#c62828', '#1a3a5c', '#e0a820', '#7c3aed', '#0f7a3a', '#ea580c', '#0ea5e9'];
 
   function dogSvg(color) {
-    return `<svg class="dog-svg" viewBox="0 0 64 40" aria-hidden="true">
-      <ellipse cx="28" cy="28" rx="18" ry="8" fill="${color}"/>
-      <ellipse cx="44" cy="22" rx="10" ry="7" fill="${color}"/>
-      <circle cx="50" cy="20" r="2" fill="#0d2744"/>
-      <path d="M52 18 L58 14 L54 20 Z" fill="${color}"/>
-      <path d="M12 26 Q6 18 10 14" stroke="${color}" stroke-width="3" fill="none"/>
-      <rect x="18" y="30" width="3" height="8" rx="1" fill="#0d2744"/>
-      <rect x="26" y="30" width="3" height="8" rx="1" fill="#0d2744"/>
-      <rect x="34" y="29" width="3" height="8" rx="1" fill="#0d2744"/>
-      <rect x="40" y="29" width="3" height="8" rx="1" fill="#0d2744"/>
+    return `<svg class="dog-svg" viewBox="0 0 72 42" aria-hidden="true">
+      <ellipse cx="34" cy="30" rx="20" ry="8" fill="${color}"/>
+      <ellipse cx="52" cy="22" rx="12" ry="8" fill="${color}"/>
+      <path d="M60 18 L68 12 L64 22 Z" fill="${color}"/>
+      <circle cx="58" cy="20" r="1.8" fill="#041018"/>
+      <path d="M14 28 Q6 16 12 10" stroke="${color}" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <path d="M22 34 L20 41 M30 34 L29 41 M40 33 L42 41 M48 33 L51 41" stroke="#1a1208" stroke-width="2.4" stroke-linecap="round"/>
+      <ellipse cx="36" cy="24" rx="5" ry="3.2" fill="#ffffff55"/>
+      <circle cx="34" cy="18" r="3.2" fill="#fff" opacity=".9"/>
     </svg>`;
   }
 
@@ -48,13 +47,14 @@
           <h1 style="margin:0;font-size:1.1rem">Kous chen</h1>
           <button class="btn ghost" type="button" data-rules>Règ</button>
         </div>
-        <div class="demo-banner">Demonstrasyon · Kredi vityèl · ${nRunners} chen · Pa RNG sètifye</div>
+        <p class="muted" style="margin:0 0 6px">${nRunners} chen · kredi vityèl · pa RNG sètifye</p>
         <span class="phase-pill" data-phase>SELEKSYON</span>
         <div class="track" data-track>
           <div class="finish-line" aria-hidden="true"></div>
           ${runners
             .map(
               (r, i) => `<div class="lane" style="top:${(100 / nRunners) * i}%;height:${100 / nRunners}%">
+              <span style="position:absolute;left:4px;top:50%;transform:translateY(-50%);z-index:2;font-size:10px;font-weight:900;color:#fff;text-shadow:0 1px 2px #000;opacity:.85">${r.id}</span>
               <div class="runner" data-runner="${r.id}" style="top:50%;transform:translateY(-50%)">
                 <span class="silk" style="background:${r.color}">${r.id}</span>
                 <div class="runner-body">${dogSvg(r.color)}</div>

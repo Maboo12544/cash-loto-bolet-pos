@@ -26,7 +26,7 @@
           <h1 style="margin:0;font-size:1.1rem">Keno</h1>
           <button class="btn ghost" type="button" data-rules>Règ</button>
         </div>
-        <div class="demo-banner">Demonstrasyon · Kredi vityèl · Règ pwovizwa · Pa RNG sètifye</div>
+        <p class="muted" style="margin:0 0 6px">Kredi vityèl · règle pwototip · pa RNG sètifye</p>
         <span class="phase-pill" data-phase>SELEKSYON</span>
         <div class="panel">
           <div class="row-between"><h3>Fich ou</h3><span class="muted" data-count>0 / ${cfg.maxPick}</span></div>
@@ -43,9 +43,10 @@
           <button class="btn primary" type="button" data-confirm style="flex:1">Konfime</button>
         </div>
         <div class="num-grid cols-10" data-grid></div>
-        <div class="panel">
-          <h3>Tiraj</h3>
-          <div class="chip-row" data-drawn></div>
+        <div class="stage machine" style="min-height:160px;height:160px">
+          <div class="machine-frame" style="inset:8px 10px 44px" aria-hidden="true"></div>
+          <div class="machine-bowl" style="height:88px;top:14px" aria-hidden="true"></div>
+          <div class="drawn-lane" data-drawn></div>
         </div>
         <div class="result-banner hidden" data-result></div>
         <div class="panel">

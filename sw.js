@@ -7,6 +7,7 @@ const ASSETS=[
   './virtual/index.html',
   './virtual/css/games.css',
   './virtual/js/core.js',
+  './virtual/js/art.js',
   './virtual/js/app.js',
   './virtual/js/lucky-six.js',
   './virtual/js/roulette.js',

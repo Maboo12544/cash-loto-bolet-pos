@@ -6,19 +6,17 @@
   const COLORS = ['#c62828', '#f5c84a', '#1d4ed8', '#15803d', '#111827', '#7e22ce', '#ea580c', '#008f96'];
 
   function horseSvg(color) {
-    return `<svg class="horse-svg" viewBox="0 0 78 44" aria-hidden="true">
-      <ellipse cx="34" cy="30" rx="22" ry="9" fill="${color}"/>
-      <path d="M52 26 L64 18 L70 22 L66 28 L54 30 Z" fill="${color}"/>
-      <path d="M68 20 L74 16" stroke="#0d2744" stroke-width="1.5"/>
-      <circle cx="67" cy="21" r="1.4" fill="#0d2744"/>
-      <path d="M14 28 Q6 16 12 10" stroke="${color}" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-      <rect x="20" y="34" width="3.4" height="9" rx="1" fill="#3b2a1a"/>
-      <rect x="30" y="34" width="3.4" height="9" rx="1" fill="#3b2a1a"/>
-      <rect x="40" y="33" width="3.4" height="9" rx="1" fill="#3b2a1a"/>
-      <rect x="48" y="33" width="3.4" height="9" rx="1" fill="#3b2a1a"/>
-      <circle cx="38" cy="18" r="5" fill="#9ef0d4"/>
-      <path d="M34 14 L38 8 L42 14" fill="#0d2744"/>
-      <rect x="35" y="18" width="6" height="8" rx="2" fill="#0d2744"/>
+    return `<svg class="horse-svg" viewBox="0 0 84 46" aria-hidden="true">
+      <ellipse cx="36" cy="31" rx="24" ry="9" fill="${color}"/>
+      <path d="M54 27 L68 16 L76 22 L70 30 L56 32 Z" fill="${color}"/>
+      <path d="M72 19 L80 13" stroke="#1a1208" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="70" cy="21" r="1.5" fill="#041018"/>
+      <path d="M14 29 Q5 15 14 8" stroke="${color}" stroke-width="3.8" fill="none" stroke-linecap="round"/>
+      <path d="M22 35 L20 44 M32 35 L31 44 M42 34 L44 44 M52 34 L55 44" stroke="#2a1a0c" stroke-width="2.6" stroke-linecap="round"/>
+      <circle cx="40" cy="17" r="5.5" fill="#9ef0d4"/>
+      <path d="M36 12 L40 5 L44 12" fill="#0d2744"/>
+      <rect x="37" y="17" width="6.5" height="9" rx="2" fill="#0d2744"/>
+      <path d="M38 26 L46 26 L44 31 L40 31 Z" fill="#ffe08a"/>
     </svg>`;
   }
 
@@ -47,7 +45,7 @@
           <h1 style="margin:0;font-size:1.1rem">Kous cheval</h1>
           <button class="btn ghost" type="button" data-rules>Règ</button>
         </div>
-        <div class="demo-banner">Demonstrasyon · Kredi vityèl · Amelyorasyon prototip · Pa RNG sètifye</div>
+        <p class="muted" style="margin:0 0 6px">${nRunners} cheval · kredi vityèl · pa RNG sètifye</p>
         <span class="phase-pill" data-phase>SELEKSYON</span>
         <div class="track horse" data-track>
           <div class="finish-line" aria-hidden="true"></div>
