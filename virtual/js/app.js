@@ -8,7 +8,7 @@
   const authGate = document.getElementById('authGate');
 
   const GAMES = [
-    { id: 'lucky6', title: 'Lucky Six', blurb: '6 nan 48 · tiraj boul' },
+    { id: 'lucky6', title: 'Sis Chans', blurb: 'Lucky Six Cash Paryaj · pa NSoft' },
     { id: 'roulette', title: 'Woulèt', blurb: 'Ewopeyen 0–36' },
     { id: 'keno', title: 'Keno', blurb: '1–80 · 20 tire' },
     { id: 'dogs', title: 'Kous chen', blurb: '6 chen · pis nèt' },
