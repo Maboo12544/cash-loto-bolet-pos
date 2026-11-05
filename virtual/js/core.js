@@ -12,8 +12,8 @@
       poolSize: 48,
       drawCount: 35,
       roundMs: 9000,
-      // Tablo demonstrasyon sèlman — pa ofisyèl
-      payoutDemo: { 0: 0, 1: 0, 2: 0, 3: 1.5, 4: 8, 5: 80, 6: 1000 },
+      // Tablo demonstrasyon sèlman — pa ofisyèl / pa sètifye
+      payoutDemo: { 0: 0, 1: 0, 2: 0, 3: 1.5, 4: 5, 5: 25, 6: 100 },
       stakeDefault: 10
     },
     roulette: {
