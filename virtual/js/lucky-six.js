@@ -24,20 +24,35 @@
           <button class="icon-btn" type="button" data-back aria-label="Retounen">←</button>
           <div class="l6-brand">
             <b>Sis Chans</b>
-            <small>Cash Paryaj · pa modèl NSoft</small>
+            <small>Cash Paryaj · sak tiraj k ap vire</small>
           </div>
           <button class="btn ghost" type="button" data-rules>Règ</button>
         </div>
 
-        <div class="l6-hero">
-          <div class="l6-tower" data-stage aria-label="Machin tiraj Sis Chans">
-            <div class="l6-tower-head">TIRAJ</div>
-            <div class="l6-tube" data-tube></div>
-            <div class="l6-tower-base">
-              <span data-draw-count>0 / ${cfg.drawCount}</span>
+        <div class="l6-drawboard" data-stage>
+          <div class="l6-drawboard-head">
+            <span>SAK TIRAJ</span>
+            <b data-draw-count>0 / ${cfg.drawCount}</b>
+          </div>
+          <div class="l6-machine">
+            <div class="l6-sack-wrap">
+              <div class="l6-sack" data-sack aria-label="Sak boul k ap vire">
+                <div class="l6-sack-inner" data-sack-inner>
+                  ${Array.from({ length: 10 }, (_, i) => `<i class="l6-tumble" style="--i:${i}"></i>`).join('')}
+                </div>
+                <div class="l6-sack-mouth" aria-hidden="true"></div>
+              </div>
+              <div class="l6-eject" data-eject aria-live="polite"></div>
+            </div>
+            <div class="l6-recent">
+              <div class="l6-recent-label">Tiraj ki fèk · menm moman</div>
+              <div class="l6-recent-rail" data-recent></div>
             </div>
           </div>
-          <div class="l6-side">
+        </div>
+
+        <div class="l6-hero">
+          <div class="l6-side" style="grid-column:1/-1">
             <span class="phase-pill" data-phase>SELEKSYON</span>
             <div class="l6-sockets" data-ticket aria-label="Fich 6 nimewo"></div>
             <div class="l6-meter" aria-hidden="true"><i data-meter></i></div>
@@ -58,20 +73,25 @@
         </div>
 
         <div class="l6-grid" data-grid></div>
-
         <div class="result-banner hidden" data-result></div>
-
         <div class="panel">
           <h3>Istorik Sis Chans</h3>
           <div class="history-list" data-history></div>
         </div>
-        <p class="config-note">Pwototip Cash Paryaj: chwazi ${cfg.pickCount} nan 1–${cfg.poolSize}, tire ${cfg.drawCount}. Tablo rekonpans demonstrasyon · configurable.</p>
+        <p class="config-note">Sak la vire, boul soti youn apre lòt, epi tiraj ki fèk yo rete vizib an menm tan. Demonstrasyon · configurable.</p>
       </div>`;
 
     const $ = (sel) => root.querySelector(sel);
 
     function phaseLabel(p) {
       return ({ select: 'SELEKSYON', locked: 'FICH FÈMEN', animating: 'TIRAJ', settled: 'REZILTA' }[p] || p);
+    }
+
+    function setSpinning(on) {
+      const sack = $('[data-sack]');
+      if (!sack) return;
+      sack.classList.toggle('spinning', !!on);
+      if (CV().reducedMotion()) sack.classList.remove('spinning');
     }
 
     function paintSockets(matchedSet) {
@@ -90,8 +110,7 @@
         }
         box.appendChild(slot);
       }
-      const pct = (selection.size / cfg.pickCount) * 100;
-      $('[data-meter]').style.width = pct + '%';
+      $('[data-meter]').style.width = (selection.size / cfg.pickCount) * 100 + '%';
       $('[data-count]').textContent = `${selection.size} / ${cfg.pickCount}`;
       $('[data-stake]').textContent = stake;
     }
@@ -145,29 +164,55 @@
       syncHistory();
     }
 
+    function clearDrawUI() {
+      $('[data-recent]').innerHTML = '';
+      $('[data-eject]').innerHTML = '';
+      $('[data-draw-count]').textContent = `0 / ${cfg.drawCount}`;
+      setSpinning(false);
+    }
+
     async function runAnimation(drawn, matched) {
-      const tube = $('[data-tube]');
-      tube.innerHTML = '';
+      const recent = $('[data-recent]');
+      const eject = $('[data-eject]');
+      recent.innerHTML = '';
+      eject.innerHTML = '';
       $('[data-draw-count]').textContent = `0 / ${drawn.length}`;
+      setSpinning(true);
+
       const ms = CV().animDuration(cfg.roundMs);
-      const step = drawn.length ? ms / drawn.length : 0;
+      const step = drawn.length ? Math.max(ms / drawn.length, CV().reducedMotion() ? 0 : 180) : 0;
       const seen = [];
+
       for (let i = 0; i < drawn.length; i++) {
         const n = drawn[i];
-        seen.push(n);
         const isHit = matched.includes(n);
-        const drop = document.createElement('div');
-        drop.className = 'l6-drop' + (isHit ? ' hit' : '');
-        drop.textContent = n;
-        tube.prepend(drop);
+        seen.push(n);
+
+        // Ball exits the spinning sack
+        const out = document.createElement('div');
+        out.className = 'l6-ball-out' + (isHit ? ' hit' : '');
+        out.textContent = n;
+        eject.innerHTML = '';
+        eject.appendChild(out);
         CV().Sfx.ball();
+
+        // Same moment: add to "tiraj ki fèk" rail
+        const chip = document.createElement('span');
+        chip.className = 'l6-recent-ball' + (isHit ? ' hit' : '');
+        chip.textContent = n;
+        chip.title = `Boul #${i + 1}`;
+        recent.appendChild(chip);
+        recent.scrollLeft = recent.scrollWidth;
+
         $('[data-draw-count]').textContent = `${i + 1} / ${drawn.length}`;
         paintGrid(seen, matched.filter((x) => seen.includes(x)));
         paintSockets(new Set(matched.filter((x) => seen.includes(x))));
-        // keep tube from overflowing visually
-        while (tube.children.length > 8) tube.removeChild(tube.lastChild);
+
         await CV().wait(step);
       }
+
+      setSpinning(false);
+      // Keep last ejected ball visible briefly
       paintGrid(drawn, matched);
       paintSockets(new Set(matched));
     }
@@ -233,12 +278,12 @@
     $('[data-rules]').onclick = () => {
       global.CashVirtualUI.openModal(
         'Règ Sis Chans',
-        `<p><b>Sis Chans</b> se vèsyon Cash Paryaj — pa yon kopi modèl NSoft Lucky 6.</p>
+        `<p><b>Sis Chans</b> — sak tiraj Cash Paryaj.</p>
          <ul>
            <li>Chwazi ${cfg.pickCount} nimewo nan 1–${cfg.poolSize}.</li>
-           <li>Gwo tou a tire ${cfg.drawCount} boul diferan.</li>
-           <li>Layout, koulè ak animasyon yo orijinal (griy 6 kolòn, fich 6 sokè, gwo tou vertikal).</li>
-           <li>Tablo rekonpans = demonstrasyon configurable. Kredi vityèl sèlman.</li>
+           <li>Sak la vire, epi boul yo soti youn apre lòt.</li>
+           <li>Ray « Tiraj ki fèk » montre boul yo an menm tan yo soti.</li>
+           <li>Rezilta fikse anvan animasyon. Kredi vityèl sèlman.</li>
          </ul>`
       );
     };
@@ -251,8 +296,7 @@
     $('[data-clear]').onclick = () => {
       if (busy) return;
       selection.clear();
-      $('[data-tube]').innerHTML = '';
-      $('[data-draw-count]').textContent = `0 / ${cfg.drawCount}`;
+      clearDrawUI();
       sync();
     };
     $('[data-confirm]').onclick = confirm;
@@ -269,6 +313,7 @@
       }
     };
 
+    clearDrawUI();
     sync();
     resumeIfNeeded();
   }
