@@ -1,6 +1,10 @@
 (function (global) {
   const CV = () => global.CashVirtual;
   const GAME = 'lucky6';
+  const COLORS = [
+    '#ff1537', '#135dff', '#ff9900', '#00c766', '#00b9e3', '#155eff', '#e51a32', '#858591',
+    '#00be75', '#008d80', '#08bada', '#eebf11', '#c111cf', '#9844e6', '#ff7622', '#dd1835'
+  ];
 
   function hits(selection, drawn) {
     const set = new Set(drawn);
@@ -12,121 +16,131 @@
     return Math.round(stake * mult * 100) / 100;
   }
 
+  function ballEl(n, extraClass) {
+    const b = document.createElement('span');
+    b.className = 'l6m-ball' + (extraClass ? ' ' + extraClass : '');
+    b.style.setProperty('--color', COLORS[(n - 1) % COLORS.length]);
+    b.textContent = n;
+    return b;
+  }
+
   function render(root, { onBack }) {
     const cfg = CV().state.config.lucky6;
     let selection = new Set();
     let busy = false;
     let stake = cfg.stakeDefault;
+    let page = 'play'; // play | confirm | results | history
+    let lastDrawn = [];
+    let lastMatched = [];
 
     root.innerHTML = `
-      <div class="game-view l6-cp" id="l6">
-        <div class="l6-top">
-          <button class="icon-btn" type="button" data-back aria-label="Retounen">←</button>
-          <div class="l6-brand">
-            <b>Sis Chans</b>
-            <small>Cash Paryaj · sak tiraj k ap vire</small>
+      <div class="l6m" id="l6">
+        <div class="l6m-notice"><span>CASH PARYAJ · LUCKY 6</span><span>KREDI VITYÈL</span></div>
+        <div class="l6m-screen">
+          <div class="l6m-toprow">
+            <button class="l6m-back" type="button" data-back aria-label="Retounen">←</button>
+            <div class="l6m-balance"><small>BALANS TÈS</small><b data-balance>0</b></div>
           </div>
-          <button class="btn ghost" type="button" data-rules>Règ</button>
-        </div>
+          <div class="l6m-clock">TIRAJ TÈS<strong data-clock>00:35</strong><small data-round>TOU #001</small><small data-clock-sub>Apre konfimasyon</small></div>
+          <span class="l6m-badge">● DEMO</span>
 
-        <div class="l6-drawboard" data-stage>
-          <div class="l6-drawboard-head">
-            <span>SAK TIRAJ</span>
-            <b data-draw-count>0 / ${cfg.drawCount}</b>
-          </div>
-          <div class="l6-machine">
-            <div class="l6-sack-wrap">
-              <div class="l6-sack" data-sack aria-label="Sak boul k ap vire">
-                <div class="l6-sack-inner" data-sack-inner>
-                  ${Array.from({ length: 10 }, (_, i) => `<i class="l6-tumble" style="--i:${i}"></i>`).join('')}
-                </div>
-                <div class="l6-sack-mouth" aria-hidden="true"></div>
-              </div>
-              <div class="l6-eject" data-eject aria-live="polite"></div>
+          <div class="l6m-page" data-page="play">
+            <div class="l6m-tabs">
+              <button type="button" class="active" data-tab="choose">CHWAZI BOUL</button>
+              <button type="button" data-tab="auto">CHWA OTOMATIK</button>
+              <button type="button" data-tab="rules">RÈG JWÈT LA</button>
             </div>
-            <div class="l6-recent">
-              <div class="l6-recent-label">Tiraj ki fèk · menm moman</div>
-              <div class="l6-recent-rail" data-recent></div>
+            <div class="l6m-board">
+              <div class="l6m-board-head"><span>CHWAZI 6 NIMEWO (1–48)</span><span data-count>0 / 6</span></div>
+              <div class="l6m-mini" data-mini></div>
+              <div class="l6m-grid" data-grid></div>
             </div>
-          </div>
-        </div>
-
-        <div class="l6-hero">
-          <div class="l6-side" style="grid-column:1/-1">
-            <span class="phase-pill" data-phase>SELEKSYON</span>
-            <div class="l6-sockets" data-ticket aria-label="Fich 6 nimewo"></div>
-            <div class="l6-meter" aria-hidden="true"><i data-meter></i></div>
-            <div class="row-between"><span class="muted">Fich</span><b data-count>0 / ${cfg.pickCount}</b></div>
-            <div class="stake-box l6-stake">
-              <button class="btn" type="button" data-stake-dec>−</button>
+            <div class="l6m-actions">
+              <button type="button" data-auto>⤨ CHWA OTOMATIK</button>
+              <button type="button" data-clear>⌫ EFASE TOUT</button>
+            </div>
+            <div class="l6m-stake">
+              <label>MONTAN TÈS</label>
+              <button type="button" data-stake-dec>−</button>
               <strong data-stake>${stake}</strong>
-              <button class="btn" type="button" data-stake-inc>+</button>
+              <button type="button" data-stake-inc>+</button>
             </div>
-            <p class="muted" style="text-align:center;margin:0">Miz · kredi vityèl</p>
+            <button class="l6m-primary" type="button" data-review>VERIFYE TIKÈ ›</button>
           </div>
-        </div>
 
-        <div class="l6-actions">
-          <button class="btn" type="button" data-auto>Oto</button>
-          <button class="btn danger" type="button" data-clear>Efase</button>
-          <button class="btn primary" type="button" data-confirm>Konfime fich</button>
-        </div>
+          <div class="l6m-page hidden" data-page="confirm">
+            <div class="l6m-confirm-nums" data-selected></div>
+            <div class="l6m-confirm-row">
+              <div class="l6m-clock l6m-clock-inline">TIRAJ TÈS<strong data-clock>00:35</strong><small data-round>TOU #001</small></div>
+              <div class="l6m-cards">
+                <div class="l6m-card"><span>MONTAN TÈS</span><b data-amount></b></div>
+                <div class="l6m-card gold"><span>MÒD DEMONSTRASYON</span><b>PA GEN PEMAN</b></div>
+              </div>
+            </div>
+            <button class="l6m-primary go" type="button" data-go>✓ KONFIME EPI JWE</button>
+            <button class="l6m-edit" type="button" data-edit>✎ MODIFYE NIMEWO YO</button>
+            <div class="l6m-how">
+              <h2>❔ KIJAN POU JWE LUCKY 6</h2>
+              <div class="l6m-steps">
+                <div><b>①</b>Chwazi 6 nimewo<br>(1–48)</div>
+                <div><b>②</b>Konfime tikè tès ou</div>
+                <div><b>③</b>Suiv tiraj<br>35 boul la</div>
+                <div><b>④</b>Gade konbyen ou jwenn</div>
+              </div>
+            </div>
+          </div>
 
-        <div class="l6-grid" data-grid></div>
-        <div class="result-banner hidden" data-result></div>
-        <div class="panel">
-          <h3>Istorik Sis Chans</h3>
-          <div class="history-list" data-history></div>
+          <div class="l6m-page hidden" data-page="results">
+            <div class="l6m-results-head">
+              <h2 data-result-title>Tiraj an kou</h2>
+              <p data-progress>Kòmanse yon tiraj pou wè rezilta.</p>
+            </div>
+            <div class="l6m-live">
+              <div class="l6m-sack spinning-off" data-sack>
+                <div class="l6m-sack-inner">${Array.from({ length: 10 }, (_, i) => `<i style="--i:${i}"></i>`).join('')}</div>
+                <div class="l6m-eject" data-eject></div>
+              </div>
+              <div class="l6m-drawn" data-drawn></div>
+            </div>
+            <p class="l6m-status" data-status role="status">Seleksyon an fèmen. Boul yo ap soti nan sak la.</p>
+            <button class="l6m-primary" type="button" data-again hidden>Retounen nan jwèt la</button>
+          </div>
+
+          <div class="l6m-page hidden" data-page="history">
+            <h2 class="l6m-hist-title">Istwa sesyon an</h2>
+            <div class="l6m-entries" data-history></div>
+            <button class="l6m-primary" type="button" data-back-play>Retounen</button>
+          </div>
+
+          <nav class="l6m-nav">
+            <button type="button" data-nav="play" class="active"><b>⌂</b>Jwe</button>
+            <button type="button" data-nav="results"><b>▥</b>Rezilta</button>
+            <button type="button" data-nav="history"><b>◷</b>Istwa</button>
+            <button type="button" data-nav="rules"><b>•••</b>Plis</button>
+          </nav>
         </div>
-        <p class="config-note">Sak la vire, boul soti youn apre lòt, epi tiraj ki fèk yo rete vizib an menm tan. Demonstrasyon · configurable.</p>
+        <div class="l6m-foot">Demo lokal · Pa gen depo, retrè oswa peman · Kredi vityèl</div>
       </div>`;
 
     const $ = (sel) => root.querySelector(sel);
+    const $$ = (sel) => [...root.querySelectorAll(sel)];
 
-    function phaseLabel(p) {
-      return ({ select: 'SELEKSYON', locked: 'FICH FÈMEN', animating: 'TIRAJ', settled: 'REZILTA' }[p] || p);
+    function showPage(name) {
+      page = name;
+      $$('.l6m-page').forEach((p) => p.classList.toggle('hidden', p.dataset.page !== name));
+      $$('.l6m-nav [data-nav]').forEach((b) => b.classList.toggle('active', b.dataset.nav === name));
     }
 
-    function setSpinning(on) {
-      const sack = $('[data-sack]');
-      if (!sack) return;
-      sack.classList.toggle('spinning', !!on);
-      if (CV().reducedMotion()) sack.classList.remove('spinning');
-    }
-
-    function paintSockets(matchedSet) {
-      const box = $('[data-ticket]');
-      const picks = [...selection].sort((a, b) => a - b);
-      box.innerHTML = '';
-      for (let i = 0; i < cfg.pickCount; i++) {
-        const slot = document.createElement('div');
-        slot.className = 'l6-socket';
-        if (picks[i] != null) {
-          slot.classList.add('filled');
-          if (matchedSet && matchedSet.has(picks[i])) slot.classList.add('hit');
-          slot.textContent = picks[i];
-        } else {
-          slot.innerHTML = `<span>${i + 1}</span>`;
-        }
-        box.appendChild(slot);
-      }
-      $('[data-meter]').style.width = (selection.size / cfg.pickCount) * 100 + '%';
-      $('[data-count]').textContent = `${selection.size} / ${cfg.pickCount}`;
-      $('[data-stake]').textContent = stake;
-    }
-
-    function paintGrid(drawn = [], matched = []) {
+    function paintGrid() {
       const grid = $('[data-grid]');
       grid.innerHTML = '';
       for (let n = 1; n <= cfg.poolSize; n++) {
         const b = document.createElement('button');
         b.type = 'button';
-        b.className = 'l6-cell';
+        b.className = 'l6m-ball';
+        b.style.setProperty('--color', COLORS[(n - 1) % COLORS.length]);
         b.textContent = n;
-        b.dataset.n = n;
-        if (selection.has(n)) b.classList.add('selected');
-        if (drawn.includes(n)) b.classList.add('drawn');
-        if (matched.includes(n)) b.classList.add('hit');
+        b.setAttribute('aria-pressed', String(selection.has(n)));
         b.disabled = busy;
         b.onclick = () => {
           if (busy) return;
@@ -139,85 +153,93 @@
       }
     }
 
+    function sync() {
+      const bal = CV().state.credits;
+      $$('[data-balance]').forEach((el) => (el.textContent = Number(bal).toLocaleString('fr-FR') + ' pts'));
+      $$('[data-stake]').forEach((el) => (el.textContent = stake));
+      $('[data-count]').textContent = `${selection.size} / ${cfg.pickCount}`;
+      const mini = $('[data-mini]');
+      mini.innerHTML = '';
+      [...selection].sort((a, b) => a - b).forEach((n) => mini.appendChild(ballEl(n)));
+      paintGrid();
+      $('[data-review]').disabled = busy || selection.size !== cfg.pickCount;
+      $('[data-auto]').disabled = busy;
+      $('[data-clear]').disabled = busy;
+      syncHistory();
+      const hist = CV().state.history[GAME] || [];
+      const tou = String((hist.length || 0) + 1).padStart(3, '0');
+      $$('[data-round]').forEach((el) => (el.textContent = 'TOU #' + tou));
+    }
+
     function syncHistory() {
       const box = $('[data-history]');
       const list = CV().state.history[GAME] || [];
-      box.innerHTML = list.length
-        ? list
-            .map(
-              (h) =>
-                `<div class="history-item"><div><b>${(h.meta && h.meta.matches) || 0} korespondans</b><br><code>#${h.id.slice(0, 8)}</code></div><div>${h.payout > 0 ? '+' : ''}${h.payout} · miz ${h.stake}</div></div>`
-            )
-            .join('')
-        : '<p class="muted">Pa gen wonn ankò.</p>';
+      if (!list.length) {
+        box.innerHTML = '<p class="l6m-empty">Pa gen tikè ankò.</p>';
+        return;
+      }
+      box.innerHTML = list
+        .map((h, i) => {
+          const nums = (h.selection || []).join(' – ');
+          const hitsN = (h.meta && h.meta.matches) || 0;
+          return `<div class="l6m-entry">Tou #${String(list.length - i).padStart(3, '0')} · ${nums} · ${hitsN}/6 · ${h.stake} pts · ${h.payout > 0 ? '+' + h.payout : '0'}</div>`;
+        })
+        .join('');
     }
 
-    function sync(drawn, matched) {
-      paintSockets(matched ? new Set(matched) : null);
-      paintGrid(drawn || [], matched || []);
-      $('[data-phase]').textContent = phaseLabel(busy ? 'animating' : 'select');
-      $('[data-confirm]').disabled = busy || selection.size !== cfg.pickCount;
-      $('[data-auto]').disabled = busy;
-      $('[data-clear]').disabled = busy;
-      $('[data-stake-dec]').disabled = busy || stake <= 1;
-      $('[data-stake-inc]').disabled = busy || stake >= 100;
-      syncHistory();
+    function openRules() {
+      global.CashVirtualUI.openModal(
+        'Lucky 6 · Demo',
+        `<p>Chwazi 6 nimewo diferan ant 1 ak 48.<br>
+         Chwa otomatik chwazi 6 nimewo pou ou.<br>
+         Montan: 1–100 pwen tès.<br>
+         Apre konfimasyon, ${cfg.drawCount} boul soti nan sak la san repetisyon.<br>
+         Rezilta a montre konbyen nimewo ou jwenn.<br>
+         Pa gen peman nan vèsyon tès sa a.</p>`
+      );
     }
 
-    function clearDrawUI() {
-      $('[data-recent]').innerHTML = '';
-      $('[data-eject]').innerHTML = '';
-      $('[data-draw-count]').textContent = `0 / ${cfg.drawCount}`;
-      setSpinning(false);
-    }
-
-    async function runAnimation(drawn, matched) {
-      const recent = $('[data-recent]');
+    async function runDraw(drawn, matched) {
+      const sack = $('[data-sack]');
       const eject = $('[data-eject]');
-      recent.innerHTML = '';
+      const drawnBox = $('[data-drawn]');
+      drawnBox.innerHTML = '';
       eject.innerHTML = '';
-      $('[data-draw-count]').textContent = `0 / ${drawn.length}`;
-      setSpinning(true);
+      sack.classList.add('spinning');
+      if (CV().reducedMotion()) sack.classList.remove('spinning');
+
+      $('[data-result-title]').textContent = 'Tiraj an kou';
+      $('[data-status]').textContent = 'Seleksyon an fèmen. Boul yo ap soti nan sak la.';
+      $('[data-again]').hidden = true;
 
       const ms = CV().animDuration(cfg.roundMs);
-      const step = drawn.length ? Math.max(ms / drawn.length, CV().reducedMotion() ? 0 : 180) : 0;
-      const seen = [];
+      const step = drawn.length ? Math.max(ms / drawn.length, CV().reducedMotion() ? 0 : 160) : 0;
+      let hitCount = 0;
 
       for (let i = 0; i < drawn.length; i++) {
         const n = drawn[i];
         const isHit = matched.includes(n);
-        seen.push(n);
+        if (isHit) hitCount++;
 
-        // Ball exits the spinning sack
-        const out = document.createElement('div');
-        out.className = 'l6-ball-out' + (isHit ? ' hit' : '');
-        out.textContent = n;
+        const out = ballEl(n, 'l6m-eject-ball' + (isHit ? ' hit' : ''));
         eject.innerHTML = '';
         eject.appendChild(out);
         CV().Sfx.ball();
 
-        // Same moment: add to "tiraj ki fèk" rail
-        const chip = document.createElement('span');
-        chip.className = 'l6-recent-ball' + (isHit ? ' hit' : '');
-        chip.textContent = n;
-        chip.title = `Boul #${i + 1}`;
-        recent.appendChild(chip);
-        recent.scrollLeft = recent.scrollWidth;
+        const chip = ballEl(n, isHit ? 'hit' : '');
+        drawnBox.appendChild(chip);
+        drawnBox.scrollTop = drawnBox.scrollHeight;
 
-        $('[data-draw-count]').textContent = `${i + 1} / ${drawn.length}`;
-        paintGrid(seen, matched.filter((x) => seen.includes(x)));
-        paintSockets(new Set(matched.filter((x) => seen.includes(x))));
-
+        $('[data-progress]').textContent = `${i + 1}/${drawn.length} boul · ${hitCount}/6 nimewo jwenn`;
         await CV().wait(step);
       }
 
-      setSpinning(false);
-      // Keep last ejected ball visible briefly
-      paintGrid(drawn, matched);
-      paintSockets(new Set(matched));
+      sack.classList.remove('spinning');
+      lastDrawn = drawn;
+      lastMatched = matched;
     }
 
-    async function confirm() {
+    async function startRound() {
       if (busy || selection.size !== cfg.pickCount) return;
       const pick = [...selection].sort((a, b) => a - b);
       const drawn = CV().pickN(cfg.poolSize, cfg.drawCount);
@@ -236,20 +258,20 @@
       sync();
       CV().Sfx.confirm();
       CV().markAnimating(GAME);
-      $('[data-phase]').textContent = phaseLabel('animating');
-      await runAnimation(drawn, matched);
+      showPage('results');
+      await runDraw(drawn, matched);
       const pay = payoutFor(matched.length, stake, cfg.payoutDemo);
       CV().settleRound(GAME, pay);
-      const banner = $('[data-result]');
-      banner.classList.remove('hidden', 'win', 'lose');
-      banner.classList.add(pay > 0 ? 'win' : 'lose');
-      banner.innerHTML = `<b>${matched.length} korespondans</b><br>${pay > 0 ? `Retou demonstrasyon: +${pay}` : 'Pa gen retou'} · #${locked.round.id.slice(0, 8)}`;
+      $('[data-result-title]').textContent =
+        matched.length === 6 ? 'Tout 6 nimewo yo soti!' : matched.length + ' sou 6 nimewo soti';
+      $('[data-status]').textContent =
+        pay > 0 ? `Retou demonstrasyon +${pay} · #${locked.round.id.slice(0, 8)}` : `Pa gen retou · #${locked.round.id.slice(0, 8)}`;
       if (pay > 0) CV().Sfx.win();
       else CV().Sfx.lose();
+      $('[data-again]').hidden = false;
       busy = false;
       CV().clearActive(GAME);
-      sync(drawn, matched);
-      $('[data-phase]').textContent = phaseLabel('settled');
+      sync();
     }
 
     async function resumeIfNeeded() {
@@ -259,34 +281,21 @@
       stake = r.stake;
       busy = true;
       sync();
-      $('[data-phase]').textContent = 'REKIPERE';
+      showPage('results');
       CV().markAnimating(GAME);
       const matched = (r.meta && r.meta.matched) || hits(r.selection, r.result.drawn);
-      await runAnimation(r.result.drawn, matched);
+      await runDraw(r.result.drawn, matched);
       const pay = payoutFor(matched.length, r.stake, cfg.payoutDemo);
       CV().settleRound(GAME, pay);
-      const banner = $('[data-result]');
-      banner.classList.remove('hidden');
-      banner.classList.add(pay > 0 ? 'win' : 'lose');
-      banner.innerHTML = `<b>Wonn rekipere</b><br>${matched.length} korespondans · ${pay > 0 ? '+' + pay : '0'} · #${r.id.slice(0, 8)}`;
+      $('[data-result-title]').textContent = 'Wonn rekipere';
+      $('[data-status]').textContent = `${matched.length}/6 · ${pay > 0 ? '+' + pay : '0'} · #${r.id.slice(0, 8)}`;
+      $('[data-again]').hidden = false;
       busy = false;
       CV().clearActive(GAME);
-      sync(r.result.drawn, matched);
+      sync();
     }
 
     $('[data-back]').onclick = onBack;
-    $('[data-rules]').onclick = () => {
-      global.CashVirtualUI.openModal(
-        'Règ Sis Chans',
-        `<p><b>Sis Chans</b> — sak tiraj Cash Paryaj.</p>
-         <ul>
-           <li>Chwazi ${cfg.pickCount} nimewo nan 1–${cfg.poolSize}.</li>
-           <li>Sak la vire, epi boul yo soti youn apre lòt.</li>
-           <li>Ray « Tiraj ki fèk » montre boul yo an menm tan yo soti.</li>
-           <li>Rezilta fikse anvan animasyon. Kredi vityèl sèlman.</li>
-         </ul>`
-      );
-    };
     $('[data-auto]').onclick = () => {
       if (busy) return;
       selection = new Set(CV().pickN(cfg.poolSize, cfg.pickCount));
@@ -296,10 +305,8 @@
     $('[data-clear]').onclick = () => {
       if (busy) return;
       selection.clear();
-      clearDrawUI();
       sync();
     };
-    $('[data-confirm]').onclick = confirm;
     $('[data-stake-dec]').onclick = () => {
       if (!busy) {
         stake = Math.max(1, stake - 5);
@@ -312,12 +319,54 @@
         sync();
       }
     };
+    $('[data-review]').onclick = () => {
+      if (selection.size !== cfg.pickCount) return;
+      const box = $('[data-selected]');
+      box.innerHTML = '';
+      [...selection].sort((a, b) => a - b).forEach((n) => box.appendChild(ballEl(n)));
+      $('[data-amount]').textContent = stake + ' pts';
+      showPage('confirm');
+    };
+    $('[data-edit]').onclick = () => showPage('play');
+    $('[data-go]').onclick = startRound;
+    $('[data-again]').onclick = () => {
+      selection.clear();
+      showPage('play');
+      sync();
+    };
+    $('[data-back-play]').onclick = () => showPage('play');
 
-    clearDrawUI();
+    $$('.l6m-tabs [data-tab]').forEach((btn) => {
+      btn.onclick = () => {
+        if (btn.dataset.tab === 'auto') $('[data-auto]').click();
+        else if (btn.dataset.tab === 'rules') openRules();
+        $$('.l6m-tabs button').forEach((b) => b.classList.toggle('active', b === btn || (btn.dataset.tab === 'choose' && b.dataset.tab === 'choose')));
+        if (btn.dataset.tab === 'choose') btn.classList.add('active');
+      };
+    });
+
+    $$('.l6m-nav [data-nav]').forEach((btn) => {
+      btn.onclick = () => {
+        if (btn.dataset.nav === 'rules') return openRules();
+        if (btn.dataset.nav === 'results' && !lastDrawn.length && !busy) {
+          $('[data-result-title]').textContent = 'Rezilta tiraj la';
+          $('[data-progress]').textContent = 'Kòmanse yon tiraj pou wè rezilta.';
+        }
+        if (btn.dataset.nav === 'results' && lastDrawn.length) {
+          const box = $('[data-drawn]');
+          box.innerHTML = '';
+          lastDrawn.forEach((n) => box.appendChild(ballEl(n, lastMatched.includes(n) ? 'hit' : '')));
+        }
+        showPage(btn.dataset.nav);
+        sync();
+      };
+    });
+
     sync();
+    showPage('play');
     resumeIfNeeded();
   }
 
   global.CashGames = global.CashGames || {};
-  global.CashGames.lucky6 = { render, id: GAME, title: 'Sis Chans' };
+  global.CashGames.lucky6 = { render, id: GAME, title: 'Lucky 6' };
 })(window);

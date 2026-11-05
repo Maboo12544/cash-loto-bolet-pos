@@ -26,7 +26,7 @@
     colors.forEach((col, i) => glossyBall(ctx, 28 + i * 28, 48 + (i % 2) * 6, 16, col));
     ctx.fillStyle = '#9ef0d4';
     ctx.font = 'bold 14px sans-serif';
-    ctx.fillText('SIS CHANS', 12, 18);
+    ctx.fillText('LUCKY 6', 12, 18);
   }
 
   function tileRoulette(c) {
