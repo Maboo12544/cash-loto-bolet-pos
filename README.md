@@ -13,6 +13,7 @@ Prototip PDV (PWA). Vann lokal, fich, enprime, WhatsApp, offline shell.
 - Countdown sou lè ET
 - Ban offline + avètisman relòj
 - PWA + service worker
+- Jwèt vityèl (Lucky 6, Woulèt, Keno, kous) ak **yon sèl balans kont** pataje ak POS
 
 ## Pa nan prototip sa (bezwen backend)
 - Sèvè / senkron tikè

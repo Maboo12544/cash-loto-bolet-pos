@@ -47,7 +47,7 @@
           <h1 style="margin:0;font-size:1.1rem">Kous chen</h1>
           <button class="btn ghost" type="button" data-rules>Règ</button>
         </div>
-        <p class="muted" style="margin:0 0 6px">${nRunners} chen · kredi vityèl · pa RNG sètifye</p>
+        <p class="muted" style="margin:0 0 6px">${nRunners} chen · balans kont · pa RNG sètifye</p>
         <span class="phase-pill" data-phase>SELEKSYON</span>
         <div class="track" data-track>
           <div class="finish-line" aria-hidden="true"></div>
@@ -244,7 +244,7 @@
           <li>${nRunners} chen ak nimewo/koulè diferan.</li>
           <li>Chwazi anvan depa — seleksyon fèmen lè kous la kòmanse.</li>
           <li>Lòd franchisman liy arive a egzakteman klasman final la.</li>
-          <li>Kredi vityèl sèlman · peyman demonstrasyon configurable.</li>
+          <li>Debi / retou sou balans kont lan (menm ak POS).</li>
         </ul>`
       );
     $('[data-go]').onclick = startRace;

@@ -26,7 +26,7 @@
           <h1 style="margin:0;font-size:1.1rem">Keno</h1>
           <button class="btn ghost" type="button" data-rules>Règ</button>
         </div>
-        <p class="muted" style="margin:0 0 6px">Kredi vityèl · règle pwototip · pa RNG sètifye</p>
+        <p class="muted" style="margin:0 0 6px">Balans kont · règle pwototip · pa RNG sètifye</p>
         <span class="phase-pill" data-phase>SELEKSYON</span>
         <div class="panel">
           <div class="row-between"><h3>Fich ou</h3><span class="muted" data-count>0 / ${cfg.maxPick}</span></div>

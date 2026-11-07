@@ -59,7 +59,7 @@
           <h1 style="margin:0;font-size:1.1rem">Woulèt</h1>
           <button class="btn ghost" type="button" data-rules>Règ</button>
         </div>
-        <p class="muted" style="margin:0 0 6px">Wou Ewopeyen 0–36 · kredi vityèl · pa RNG sètifye</p>
+        <p class="muted" style="margin:0 0 6px">Wou Ewopeyen 0–36 · balans kont · pa RNG sètifye</p>
         <span class="phase-pill" data-phase>SELEKSYON</span>
         <div class="roulette-layout">
           <div class="wheel-wrap">
@@ -177,7 +177,7 @@
       if (busy) return;
       const amount = chip;
       if (totalStake() + amount > CV().state.credits) {
-        alert('Kredi vityèl pa sifi.');
+        alert('Balans kont pa sifi.');
         return;
       }
       const bet = { ...spec, amount, id: CV().uuid() };
@@ -315,7 +315,7 @@
         `<p>Wou <b>Ewopeyen</b> ak yon sèl zewo (0–36).</p>
          <ul>
            <li>Ou ka parye sou nimewo, wouj/nwa, pè/enpè, ba/wo, douzèn ak kolòn.</li>
-           <li>Jeton yo se demonstrasyon (kredi vityèl).</li>
+           <li>Jeton yo debit nan balans kont lan (menm ak POS).</li>
            <li>Tablo rekonpans la make kòm demonstrasyon epi li configurable.</li>
            <li>Pa gen depo/retrè ak lajan reyèl.</li>
          </ul>`
