@@ -45,7 +45,7 @@
           <h1 style="margin:0;font-size:1.1rem">Kous cheval</h1>
           <button class="btn ghost" type="button" data-rules>Règ</button>
         </div>
-        <p class="muted" style="margin:0 0 6px">${nRunners} cheval · kredi vityèl · pa RNG sètifye</p>
+        <p class="muted" style="margin:0 0 6px">${nRunners} cheval · balans kont · pa RNG sètifye</p>
         <span class="phase-pill" data-phase>SELEKSYON</span>
         <div class="track horse" data-track>
           <div class="finish-line" aria-hidden="true"></div>
@@ -238,7 +238,7 @@
           <li>${nRunners} cheval ak kavalye/nimewo/koulè diferan.</li>
           <li>Seleksyon anvan depa; fèmen pandan kous la.</li>
           <li>Cheval ou chwazi a rete an evidans.</li>
-          <li>Lòd arive = klasman final. Kredi vityèl sèlman.</li>
+          <li>Lòd arive = klasman final. Debi / retou sou balans kont lan.</li>
         </ul>`
       );
     $('[data-go]').onclick = startRace;

@@ -31,9 +31,13 @@
     return !!(a && a.email);
   }
 
+  function fmtMoney(n) {
+    return '$' + Number(n || 0).toFixed(2);
+  }
+
   function updateChrome() {
     const s = CashVirtual.state;
-    creditEl.textContent = Number(s.credits).toLocaleString('fr-HT');
+    creditEl.textContent = fmtMoney(s.credits);
     soundBtn.textContent = s.sound ? '🔊' : '🔇';
     const on = CashVirtual.online();
     statusBar.className = 'status-bar on ' + (on ? 'online' : 'offline');
@@ -95,15 +99,16 @@
     };
     document.getElementById('forgotLink').onclick = (e) => {
       e.preventDefault();
-      openModal('Bliye modpas', '<p>Demonstrasyon sèlman — pa gen reset reyèl. Peze Konekte pou antre ak kredi vityèl.</p>');
+      openModal('Bliye modpas', '<p>Demonstrasyon sèlman — pa gen reset reyèl. Peze Konekte pou antre ak balans kont lan.</p>');
     };
     document.getElementById('userBtn').onclick = () => showAuth(true);
     document.getElementById('menuBtn').onclick = () => {
       openModal(
         'Meni',
-        `<p><b>Cash Paryaj</b> · Jwèt vityèl</p>
+        `<p><b>Cash Paryaj</b> · Yon sèl balans kont</p>
+         <p class="muted">Balans: <b>${fmtMoney(CashVirtual.state.credits)}</b></p>
          <button class="btn block" type="button" id="mSound">${CashVirtual.state.sound ? 'Dezaktive son' : 'Aktive son'}</button>
-         <button class="btn block" type="button" id="mRefill" style="margin-top:8px">Ranpli kredi vityèl (1000)</button>
+         <button class="btn block" type="button" id="mRefill" style="margin-top:8px">Ranpli balans kont ($1000)</button>
          <button class="btn block" type="button" id="mPos" style="margin-top:8px">Retounen POS</button>
          <button class="btn danger block" type="button" id="mOut" style="margin-top:8px">Dekonekte</button>`
       );
@@ -162,8 +167,8 @@
         <div class="panel" style="margin-top:14px">
           <div class="row-between">
             <div>
-              <h3 style="margin:0">Kredi vityèl</h3>
-              <p class="muted" style="margin:4px 0 0">Separe nèt ak balans POS / kliyan reyèl.</p>
+              <h3 style="margin:0">Balans kont</h3>
+              <p class="muted" style="margin:4px 0 0">Menm balans ak POS — yon sèl kont.</p>
             </div>
             <button class="btn" type="button" data-refill>Ranpli</button>
           </div>
@@ -185,12 +190,11 @@
       CashVirtual.refillDemo(1000);
       CashVirtual.Sfx.confirm();
       updateChrome();
+      document.getElementById('posGuard').textContent =
+        `Balans kont: ${fmtMoney(CashVirtual.getAccountBalance())} · pataje ak POS`;
     };
-    const pos = CashVirtual.getPosBalanceSnapshot();
     document.getElementById('posGuard').textContent =
-      pos == null
-        ? 'Balans POS pa detekte isit la (nòmal).'
-        : `Balans POS (pa manyen): ${pos.toFixed(2)}`;
+      `Balans kont: ${fmtMoney(CashVirtual.getAccountBalance())} · pataje ak POS`;
   }
 
   function route() {
@@ -236,7 +240,7 @@
        <ul>
          <li>Modal Konekte / Enskri pou sesyon demonstrasyon.</li>
          <li>Tuil JWÈT VITYÈL tankou kategori prensipal.</li>
-         <li>Senk jwèt ak animasyon + kredi vityèl.</li>
+         <li>Senk jwèt · <b>yon sèl balans kont</b> pataje ak POS.</li>
        </ul>`
     );
   };

@@ -60,7 +60,7 @@ button{-webkit-tap-highlight-color:transparent;user-select:none}
 <button id="clockBtn"><span id="clock">--:--</span></button>
 </section>
 <div class="offbar" id="offbar">OFFLINE</div>
-<a class="virtlink" href="./virtual/index.html">Jwèt vityèl · kredi demonstrasyon</a>
+<a class="virtlink" href="./virtual/index.html">Jwèt vityèl · menm balans kont</a>
 <button class="draw" id="drawBtn"><span>🟢</span><b id="drawName">FLORIDA PM</b><small>Fèmen : <em id="countdown">00:00:00</em></small><i>⌄</i></button>
 <section class="gamebar" id="gamebar">
 <button class="active" data-mode="B">Bolet</button>
@@ -181,7 +181,13 @@ on('ticketTab',()=>show('Tikè',rows(st.tickets)));
 on('playsTab',()=>show('Jwe',rows(st.cart)+receiptHtml(st.cart)));
 on('todayBtn',()=>show('Tikè jodi a',rows(st.tickets.filter(t=>new Date(t.at).toDateString()===new Date().toDateString()))));
 on('printBtn',()=>{if(!st.cart.length)return alert('Pa gen fich.');finishTicket();});
-on('moneyBtn',()=>show('Balans','<div class="row"><span>Balans</span><b>'+fmt(st.balance)+'</b></div>'));
+on('moneyBtn',()=>{
+  show('Balans kont',
+    '<div class="row"><span>Balans</span><b>'+fmt(st.balance)+'</b></div>'+
+    '<p style="font-size:12px;color:#64748b;margin:8px 0">Menm balans pou POS ak jwèt vityèl.</p>'+
+    '<button id="topUpBtn" type="button">Ranpli $1000</button>');
+  on('topUpBtn',()=>{st.balance=1000;save();sync();panel.classList.add('hidden');});
+});
 on('copyBtn',async()=>{const t=st.tickets[0]||st.cart[0];if(!t)return alert('Pa gen tikè.');try{await navigator.clipboard.writeText(t.number+' '+fmt(t.amount));alert('Kopye')}catch(err){alert(err.message)}});
 on('posBtn',()=>show('POS','<div class="row"><span>PDV</span><b>pos1</b></div>'));
 on('clockBtn',()=>alert(new Date().toLocaleString()));
@@ -196,6 +202,13 @@ function tick(){
 }
 setInterval(tick,1000);tick();sync();setField('number');
 window.addEventListener('online',sync);window.addEventListener('offline',sync);
+window.addEventListener('storage',e=>{
+  if(e.key!==S)return;
+  try{const next=JSON.parse(localStorage.getItem(S)||'null');if(next){st=next;sync();}}catch(_){}
+});
+window.addEventListener('focus',()=>{
+  try{const next=JSON.parse(localStorage.getItem(S)||'null');if(next){st=next;sync();}}catch(_){}
+});
 if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
 </script>
 </body>

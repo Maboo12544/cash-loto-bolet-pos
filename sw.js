@@ -1,4 +1,4 @@
-const CACHE='cash-loto-pos-v4-virtual';
+const CACHE='cash-loto-pos-v5-shared-balance';
 const ASSETS=[
   './',
   './index.html',

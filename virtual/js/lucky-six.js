@@ -35,11 +35,11 @@
 
     root.innerHTML = `
       <div class="l6m" id="l6">
-        <div class="l6m-notice"><span>CASH PARYAJ · LUCKY 6</span><span>KREDI VITYÈL</span></div>
+        <div class="l6m-notice"><span>CASH PARYAJ · LUCKY 6</span><span>BALANS KONT</span></div>
         <div class="l6m-screen">
           <div class="l6m-toprow">
             <button class="l6m-back" type="button" data-back aria-label="Retounen">←</button>
-            <div class="l6m-balance"><small>BALANS TÈS</small><b data-balance>0</b></div>
+            <div class="l6m-balance"><small>BALANS</small><b data-balance>0</b></div>
           </div>
           <div class="l6m-clock">TIRAJ TÈS<strong data-clock>00:35</strong><small data-round>TOU #001</small><small data-clock-sub>Apre konfimasyon</small></div>
           <span class="l6m-badge">● DEMO</span>
@@ -119,7 +119,7 @@
             <button type="button" data-nav="rules"><b>•••</b>Plis</button>
           </nav>
         </div>
-        <div class="l6m-foot">Demo lokal · Pa gen depo, retrè oswa peman · Kredi vityèl</div>
+        <div class="l6m-foot">Demo lokal · Yon sèl balans kont (POS + jwèt)</div>
       </div>`;
 
     const $ = (sel) => root.querySelector(sel);
@@ -155,8 +155,8 @@
 
     function sync() {
       const bal = CV().state.credits;
-      $$('[data-balance]').forEach((el) => (el.textContent = Number(bal).toLocaleString('fr-FR') + ' pts'));
-      $$('[data-stake]').forEach((el) => (el.textContent = stake));
+      $$('[data-balance]').forEach((el) => (el.textContent = '$' + Number(bal).toFixed(2)));
+      $$('[data-stake]').forEach((el) => (el.textContent = '$' + Number(stake).toFixed(2)));
       $('[data-count]').textContent = `${selection.size} / ${cfg.pickCount}`;
       const mini = $('[data-mini]');
       mini.innerHTML = '';
@@ -182,7 +182,7 @@
         .map((h, i) => {
           const nums = (h.selection || []).join(' – ');
           const hitsN = (h.meta && h.meta.matches) || 0;
-          return `<div class="l6m-entry">Tou #${String(list.length - i).padStart(3, '0')} · ${nums} · ${hitsN}/6 · ${h.stake} pts · ${h.payout > 0 ? '+' + h.payout : '0'}</div>`;
+          return `<div class="l6m-entry">Tou #${String(list.length - i).padStart(3, '0')} · ${nums} · ${hitsN}/6 · $${Number(h.stake).toFixed(2)} · ${h.payout > 0 ? '+$' + Number(h.payout).toFixed(2) : '$0.00'}</div>`;
         })
         .join('');
     }
@@ -324,7 +324,7 @@
       const box = $('[data-selected]');
       box.innerHTML = '';
       [...selection].sort((a, b) => a - b).forEach((n) => box.appendChild(ballEl(n)));
-      $('[data-amount]').textContent = stake + ' pts';
+      $('[data-amount]').textContent = '$' + Number(stake).toFixed(2);
       showPage('confirm');
     };
     $('[data-edit]').onclick = () => showPage('play');

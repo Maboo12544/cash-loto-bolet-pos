@@ -1,10 +1,11 @@
 /**
- * Cash Paryaj — nwayo demonstrasyon jwèt vityèl
- * Kredi vityèl yo separe nèt ak balans POS / kliyan reyèl.
+ * Cash Paryaj — nwayo jwèt vityèl
+ * Yon sèl balans kont (menm ak POS): cashloto-active-pos-v6.balance
  */
 (function (global) {
-  const STORE_KEY = 'cash-paryaj-virtual-demo-v2';
-  const POS_KEY = 'cashloto-active-pos-v6'; // pa janm modifye sa pou jwèt yo
+  const STORE_KEY = 'cash-paryaj-virtual-demo-v3';
+  const ACCOUNT_KEY = 'cashloto-active-pos-v6';
+  const DEFAULT_BALANCE = 707.58;
 
   const DEFAULT_CONFIG = {
     lucky6: {
@@ -75,7 +76,11 @@
 
   function load() {
     try {
-      const raw = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
+      // Migre istwa v2 → v3 si nesesè
+      let raw = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
+      if (!raw) {
+        raw = JSON.parse(localStorage.getItem('cash-paryaj-virtual-demo-v2') || 'null');
+      }
       if (!raw || typeof raw !== 'object') return null;
       return raw;
     } catch {
@@ -85,8 +90,7 @@
 
   function blankState() {
     return {
-      version: 2,
-      credits: 1000,
+      version: 3,
       sound: true,
       config: structuredClone(DEFAULT_CONFIG),
       history: { lucky6: [], roulette: [], keno: [], dogs: [], horses: [] },
@@ -96,7 +100,50 @@
     };
   }
 
+  function defaultAccount() {
+    return {
+      balance: DEFAULT_BALANCE,
+      sales: 0,
+      tickets: [],
+      cart: [],
+      mode: 'B',
+      draw: 'FLORIDA PM',
+      lastAmount: 0
+    };
+  }
+
+  function readAccount() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(ACCOUNT_KEY) || 'null');
+      if (raw && typeof raw === 'object') {
+        if (typeof raw.balance !== 'number' || Number.isNaN(raw.balance)) {
+          raw.balance = DEFAULT_BALANCE;
+        }
+        return raw;
+      }
+    } catch (_) {}
+    const blank = defaultAccount();
+    localStorage.setItem(ACCOUNT_KEY, JSON.stringify(blank));
+    return blank;
+  }
+
+  function writeAccount(acc) {
+    localStorage.setItem(ACCOUNT_KEY, JSON.stringify(acc));
+  }
+
+  function getAccountBalance() {
+    return Math.round(readAccount().balance * 100) / 100;
+  }
+
+  function setAccountBalance(amount) {
+    const acc = readAccount();
+    acc.balance = Math.round(Number(amount) * 100) / 100;
+    writeAccount(acc);
+  }
+
   let state = load() || blankState();
+  state.version = 3;
+  delete state.credits;
   if (!state.config) state.config = structuredClone(DEFAULT_CONFIG);
   // Merge missing config keys without wiping custom values
   for (const k of Object.keys(DEFAULT_CONFIG)) {
@@ -107,19 +154,18 @@
   if (!state.processedDebits) state.processedDebits = {};
   if (!state.processedCredits) state.processedCredits = {};
 
+  function syncCreditsMirror() {
+    state.credits = getAccountBalance();
+  }
+  syncCreditsMirror();
+
   function save() {
-    localStorage.setItem(STORE_KEY, JSON.stringify(state));
-    // Garanti nou pa manyen balans POS
-    void POS_KEY;
+    const { credits: _c, ...rest } = state;
+    localStorage.setItem(STORE_KEY, JSON.stringify(rest));
   }
 
   function getPosBalanceSnapshot() {
-    try {
-      const pos = JSON.parse(localStorage.getItem(POS_KEY) || 'null');
-      return pos && typeof pos.balance === 'number' ? pos.balance : null;
-    } catch {
-      return null;
-    }
+    return getAccountBalance();
   }
 
   const listeners = new Set();
@@ -212,8 +258,10 @@
 
   function debitOnce(roundId, amount) {
     if (state.processedDebits[roundId]) return { ok: true, already: true };
-    if (amount > state.credits) return { ok: false, error: 'Kredi vityèl pa sifi.' };
-    state.credits = Math.round((state.credits - amount) * 100) / 100;
+    syncCreditsMirror();
+    if (amount > state.credits) return { ok: false, error: 'Balans kont pa sifi.' };
+    setAccountBalance(state.credits - amount);
+    syncCreditsMirror();
     state.processedDebits[roundId] = { amount, at: Date.now() };
     save();
     emit();
@@ -223,7 +271,9 @@
   function creditOnce(roundId, amount) {
     if (state.processedCredits[roundId]) return { ok: true, already: true };
     if (amount > 0) {
-      state.credits = Math.round((state.credits + amount) * 100) / 100;
+      syncCreditsMirror();
+      setAccountBalance(state.credits + amount);
+      syncCreditsMirror();
     }
     state.processedCredits[roundId] = { amount, at: Date.now() };
     save();
@@ -251,10 +301,24 @@
     emit();
   }
 
+  /** Ranpli balans kont lan (POS + jwèt pataje menm kantite). */
   function refillDemo(amount = 1000) {
-    state.credits = amount;
+    setAccountBalance(amount);
+    syncCreditsMirror();
     save();
     emit();
+  }
+
+  function refreshAccount() {
+    syncCreditsMirror();
+    emit();
+  }
+
+  if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+    window.addEventListener('storage', (e) => {
+      if (e.key === ACCOUNT_KEY) refreshAccount();
+    });
+    window.addEventListener('focus', refreshAccount);
   }
 
   function toggleSound() {
@@ -337,7 +401,9 @@
 
   global.CashVirtual = {
     STORE_KEY,
+    ACCOUNT_KEY,
     get state() {
+      syncCreditsMirror();
       return state;
     },
     save,
@@ -351,6 +417,9 @@
     animDuration,
     online,
     getPosBalanceSnapshot,
+    getAccountBalance,
+    setAccountBalance,
+    refreshAccount,
     refillDemo,
     toggleSound,
     lockRound,
